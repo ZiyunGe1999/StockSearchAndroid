@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.graphics.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> implements SwipeToDeleteCallback.ItemTouchHelperContract {
 
     private ArrayList<String> data;
 
@@ -19,10 +21,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         private TextView mTitle;
         RelativeLayout relativeLayout;
+        View rowView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
+            rowView = itemView;
             mTitle = itemView.findViewById(R.id.txtTitle);
         }
     }
@@ -47,6 +51,31 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return data.size();
     }
 
+    @Override
+    public void onRowMoved(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(data, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(data, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onRowSelected(MyViewHolder myViewHolder) {
+        myViewHolder.rowView.setBackgroundColor(Color.GRAY);
+
+    }
+
+    @Override
+    public void onRowClear(MyViewHolder myViewHolder) {
+        myViewHolder.rowView.setBackgroundColor(Color.WHITE);
+
+    }
 
     public void removeItem(int position) {
         data.remove(position);
