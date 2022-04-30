@@ -12,8 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.View;
+import android.widget.TextView;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerViewAdapter mAdapter;
     ArrayList<String> stringArrayList = new ArrayList<>();
     CoordinatorLayout coordinatorLayout;
+    TextView todayDateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         coordinatorLayout = findViewById(R.id.coordinatorLayout);
+
+        todayDateTextView = findViewById(R.id.todayDate);
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat month_date = new SimpleDateFormat("MMM");
+        String month_name = month_date.format(cal.getTime());
+        todayDateTextView.setText(cal.get(Calendar.DAY_OF_MONTH) + " " + month_name + " " + cal.get(Calendar.YEAR));
+
 
         populateRecyclerView();
         enableSwipeToDeleteAndUndo();
@@ -42,12 +54,14 @@ public class MainActivity extends AppCompatActivity {
         stringArrayList.add("Item 2");
         stringArrayList.add("Item 3");
         stringArrayList.add("Item 4");
-        stringArrayList.add("Item 5");
-        stringArrayList.add("Item 6");
-        stringArrayList.add("Item 7");
-        stringArrayList.add("Item 8");
-        stringArrayList.add("Item 9");
-        stringArrayList.add("Item 10");
+//        stringArrayList.add("Item 5");
+//        stringArrayList.add("Item 6");
+//        stringArrayList.add("Item 7");
+//        stringArrayList.add("Item 8");
+//        stringArrayList.add("Item 9");
+//        stringArrayList.add("Item 10");
+//        stringArrayList.add("Item 11");
+//        stringArrayList.add("Item 12");
 
         mAdapter = new RecyclerViewAdapter(stringArrayList);
         recyclerView.setAdapter(mAdapter);
