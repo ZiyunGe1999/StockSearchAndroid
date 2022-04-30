@@ -2,6 +2,8 @@
 package com.example.stocks;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +70,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onRowSelected(MyViewHolder myViewHolder) {
         myViewHolder.rowView.setBackgroundColor(Color.GRAY);
-
     }
 
     @Override

@@ -11,6 +11,8 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,8 +25,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     RecyclerView recyclerView;
+    RecyclerView favoritesRecyclerView;
     RecyclerViewAdapter mAdapter;
+    RecyclerViewAdapter favoritesAdapter;
     ArrayList<String> stringArrayList = new ArrayList<>();
+    ArrayList<String> favoritesList = new ArrayList<>();
     CoordinatorLayout coordinatorLayout;
     TextView todayDateTextView;
 
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = findViewById(R.id.recyclerView);
+        favoritesRecyclerView = findViewById(R.id.favoritesRecyclerView);
         coordinatorLayout = findViewById(R.id.coordinatorLayout);
 
         todayDateTextView = findViewById(R.id.todayDate);
@@ -63,10 +69,16 @@ public class MainActivity extends AppCompatActivity {
 //        stringArrayList.add("Item 11");
 //        stringArrayList.add("Item 12");
 
+        favoritesList.add("Favorite 1");
+        favoritesList.add("Favorite 2");
+        favoritesList.add("Favorite 3");
+        favoritesList.add("Favorite 4");
+
         mAdapter = new RecyclerViewAdapter(stringArrayList);
         recyclerView.setAdapter(mAdapter);
 
-
+        favoritesAdapter = new RecyclerViewAdapter(favoritesList);
+        favoritesRecyclerView.setAdapter(favoritesAdapter);
     }
 
     private void enableSwipeToDeleteAndUndo() {
@@ -100,6 +112,18 @@ public class MainActivity extends AppCompatActivity {
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
         itemTouchhelper.attachToRecyclerView(recyclerView);
+
+        SwipeToDeleteCallback favoriteSwipeCallback = new SwipeToDeleteCallback(this, favoritesAdapter) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                final int position = viewHolder.getAdapterPosition();
+                Log.e("gzy", "onSwiped: " + position);
+//                final String item = favoritesAdapter.getData().get(position);
+                favoritesAdapter.removeItem(position);
+            }
+        };
+        ItemTouchHelper favoritesItemTouchhelper = new ItemTouchHelper(favoriteSwipeCallback);
+        favoritesItemTouchhelper.attachToRecyclerView(favoritesRecyclerView);
     }
 
 
