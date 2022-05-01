@@ -2,6 +2,8 @@ package com.example.stocks;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -9,11 +11,17 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.sql.Time;
@@ -23,7 +31,7 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    public static final String EXTRA_MESSAGE = "com.example.stocks.STOCK";
     RecyclerView recyclerView;
     RecyclerView favoritesRecyclerView;
     RecyclerViewAdapter mAdapter;
@@ -53,6 +61,34 @@ public class MainActivity extends AppCompatActivity {
         enableSwipeToDeleteAndUndo();
 
 
+    }
+
+    public void dispalyStockInfoActivity(String s) {
+        Intent intent = new Intent(this, DisplayStockInfo.class);
+        intent.putExtra(EXTRA_MESSAGE, s);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                dispalyStockInfoActivity(s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.e("gzy", "onQueryTextChange: " + s);
+                return true;
+            }
+        });
+        return true;
     }
 
     private void populateRecyclerView() {
