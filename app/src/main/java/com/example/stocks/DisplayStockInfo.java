@@ -3,6 +3,8 @@ package com.example.stocks;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,11 +17,35 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Locale;
+
 public class DisplayStockInfo extends AppCompatActivity {
+    final String basicUrl = "https://stocksearchnodejs.wl.r.appspot.com/api/v1/";
+    RequestQueue queue;
+
+    public interface SetUpView {
+        public void setup(JSONObject data) throws JSONException;
+    }
+
+    public void setTextForView(String str, TextView view) {
+        view.setText(str);
+    }
+
+    public class SetUpCompanyDescription implements SetUpView {
+        public void setup(JSONObject data) throws JSONException {
+            String logoUrl = data.getString("logo");
+            ImageView logoView = findViewById(R.id.logo);
+            Picasso.get().load(logoUrl).into(logoView);
+
+            setTextForView(data.getString("ticker"), findViewById(R.id.ticker));
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,19 +54,16 @@ public class DisplayStockInfo extends AppCompatActivity {
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        message = message.toUpperCase();
 
         setTitle(message);
 
-        // Capture the layout's TextView and set the string as its text
-        TextView textView = findViewById(R.id.stockText);
-        textView.setText(message);
+        queue = Volley.newRequestQueue(this);
 
-        TextView responseTextView = findViewById(R.id.responseText);
+        sendRequest(basicUrl + "stock/profile2?symbol=" + message, new SetUpCompanyDescription());
+    }
 
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://stocksearchnodejs.wl.r.appspot.com/api/v1/stock/profile2?symbol=AAPL";
-
+    public void sendRequest(String url, SetUpView setupView) {
         // Request a json response from the provided URL.
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -48,7 +71,7 @@ public class DisplayStockInfo extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            responseTextView.setText("Response: " + response.getString("name"));
+                            setupView.setup(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

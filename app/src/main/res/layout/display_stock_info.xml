@@ -13,24 +13,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/stockText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="TextView"
-                android:gravity="center" />
-            <TextView
-                android:id="@+id/responseText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <ImageView
-                    android:layout_width="70sp"
-                    android:layout_height="70sp"/>
+                    android:id="@+id/logo"
+                    android:layout_width="40sp"
+                    android:layout_height="40sp"
+                    android:layout_margin="10sp"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -38,16 +29,19 @@
                     android:gravity="center"
                     android:paddingLeft="10sp">
                     <TextView
+                        android:id="@+id/ticker"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        android:text="Stock Name"/>
+                        android:text="Stock Name"
+                        android:textSize="20sp"/>
                     <TextView
+                        android:id="@+id/company"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
                         android:textColor="#999899"
-                        android:textSize="10sp"
+                        android:textSize="15sp"
                         android:text="Company Name"/>
                 </LinearLayout>
                 <LinearLayout
@@ -57,14 +51,18 @@
                     android:gravity="center"
                     android:paddingRight="10sp">
                     <TextView
+                        android:id="@+id/lastPrice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="$100.00"
+                        android:textSize="15sp"
                         android:gravity="right"/>
                     <TextView
+                        android:id="@+id/change"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="$100.00"
+                        android:textSize="15sp"
                         android:gravity="right"/>
                 </LinearLayout>
             </LinearLayout>
