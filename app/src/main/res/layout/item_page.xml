@@ -3,11 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/itemLayout"
-    android:layout_marginTop="20sp">
-    <TextView
-        android:id="@+id/itemText"
+    android:orientation="vertical">
+    <WebView
+        android:id="@+id/price_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello"/>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

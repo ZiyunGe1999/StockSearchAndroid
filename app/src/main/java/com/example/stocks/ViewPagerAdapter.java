@@ -3,11 +3,16 @@ package com.example.stocks;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewPagerViewHolder> {
     @NonNull
@@ -18,7 +23,18 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewPagerViewHolder holder, int position) {
-        holder.textView.setText(String.valueOf(position));
+        holder.priceWebView.setWebViewClient(new WebViewClient(){
+            public void onPageFinished(WebView view, String url){
+                JSONObject test = new JSONObject();
+                try {
+                    test.put("test", "hello world");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                holder.priceWebView.loadUrl("javascript:setupText('"+test.toString()+"')");
+            }
+        });
+        holder.priceWebView.loadUrl("file:///android_asset/priceHighcharts/priceHighcharts.html");
     }
 
     @Override
@@ -28,13 +44,16 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     class ViewPagerViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textView;
         LinearLayout linearLayout;
+        WebView priceWebView;
 
         public ViewPagerViewHolder(@NonNull View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.itemText);
             linearLayout = itemView.findViewById(R.id.itemLayout);
+            priceWebView = itemView.findViewById(R.id.price_webview);
+            priceWebView.getSettings().setJavaScriptEnabled (true);
+//            priceWebView.getSettings().setUseWideViewPort(true);
+//            priceWebView.getSettings().setLoadWithOverviewMode(true);
         }
     }
 }
