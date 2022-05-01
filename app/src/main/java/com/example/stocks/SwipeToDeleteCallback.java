@@ -62,9 +62,7 @@ abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
 //        return makeMovementFlags(0, ItemTouchHelper.LEFT);
         int swipeFlags = 0;
         int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-        if (viewHolder.getAdapterPosition() != 0) {
-            swipeFlags = ItemTouchHelper.START;
-        }
+        swipeFlags = ItemTouchHelper.START;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
 

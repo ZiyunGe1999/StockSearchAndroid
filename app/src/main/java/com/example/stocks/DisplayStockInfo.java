@@ -9,7 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.android.car.ui.toolbar.TabLayout;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -18,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -30,6 +33,7 @@ import java.util.Set;
 public class DisplayStockInfo extends AppCompatActivity {
     final String basicUrl = "https://stocksearchnodejs.wl.r.appspot.com/api/v1/";
     RequestQueue queue;
+    ViewPager2 viewPager;
 
     public interface SetUpView {
         public void setup(JSONObject data) throws JSONException;
@@ -88,6 +92,16 @@ public class DisplayStockInfo extends AppCompatActivity {
 
         sendRequest(basicUrl + "stock/profile2?symbol=" + message, new SetUpCompanyDescription());
         sendRequest(basicUrl + "quote?symbol=" + message, new SetUpCompanyLatestPrice());
+
+        viewPager = findViewById(R.id.pager);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter();
+        viewPager.setAdapter(viewPagerAdapter);
+
+        com.google.android.material.tabs.TabLayout tabLayout = findViewById(R.id.tab_layout);
+        new TabLayoutMediator(tabLayout,
+                viewPager,
+                (tab, position) -> tab.setIcon(position == 0 ? R.drawable.ic_chart : R.drawable.ic_time)
+        ).attach();
     }
 
     public void sendRequest(String url, SetUpView setupView) {
