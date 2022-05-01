@@ -1,6 +1,7 @@
 package com.example.stocks;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +23,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.Locale;
+import java.util.Set;
 
 public class DisplayStockInfo extends AppCompatActivity {
     final String basicUrl = "https://stocksearchnodejs.wl.r.appspot.com/api/v1/";
@@ -46,6 +49,29 @@ public class DisplayStockInfo extends AppCompatActivity {
         }
     }
 
+    public class SetUpCompanyLatestPrice implements SetUpView {
+        @Override
+        public void setup(JSONObject data) throws JSONException {
+            DecimalFormat df = new DecimalFormat("0.00");
+            Double price = data.getDouble("c");
+            Double change = data.getDouble("d");
+            Double changePercentage = data.getDouble("dp");
+
+            setTextForView("$" + df.format(price), findViewById(R.id.lastPrice));
+            TextView changeTextView = findViewById(R.id.change);
+            setTextForView("$" + df.format(change) + " (" + df.format(changePercentage) + "%)", changeTextView);
+            ImageView trendImageView = findViewById(R.id.trend);
+            if (change < 0) {
+                changeTextView.setTextColor(Color.RED);
+                trendImageView.setImageDrawable(getResources().getDrawable( R.drawable.ic_trend_down ));
+            }
+            else {
+                changeTextView.setTextColor(Color.GREEN);
+                trendImageView.setImageDrawable(getResources().getDrawable( R.drawable.ic_trend_up ));
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +87,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         queue = Volley.newRequestQueue(this);
 
         sendRequest(basicUrl + "stock/profile2?symbol=" + message, new SetUpCompanyDescription());
+        sendRequest(basicUrl + "quote?symbol=" + message, new SetUpCompanyLatestPrice());
     }
 
     public void sendRequest(String url, SetUpView setupView) {
