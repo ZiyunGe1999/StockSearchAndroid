@@ -1,5 +1,6 @@
 package com.example.stocks;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 
 public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewPagerViewHolder> {
     JSONObject hourlyPriceData = null;
+    JSONObject historicalData = null;
     String ticker;
     String color = null;
 
@@ -31,18 +33,24 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewPagerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewPagerViewHolder holder, @SuppressLint("RecyclerView") int position) {
 //        Log.e("gzy", "it's position " + position);
         holder.priceWebView.setWebViewClient(new WebViewClient(){
             public void onPageFinished(WebView view, String url){
-                if (hourlyPriceData != null && color != null) {
-//                    Log.e("gzy", "inside setup");
-//                    Log.e("gzy", hourlyPriceData.toString());
+                if (hourlyPriceData != null && color != null && position == 0) {
                     holder.priceWebView.loadUrl("javascript:setupHighCharts('" + hourlyPriceData.toString() + "', '" + ticker + "', '" + color + "' )");
+                }
+                if (historicalData != null && position == 1) {
+                    holder.priceWebView.loadUrl("javascript:setupHighCharts('" + historicalData.toString() + "', '" + ticker + "' )");
                 }
             }
         });
-        holder.priceWebView.loadUrl("file:///android_asset/priceHighcharts/priceHighcharts.html");
+        if (position == 0) {
+            holder.priceWebView.loadUrl("file:///android_asset/priceHighcharts/priceHighcharts.html");
+        }
+        else {
+            holder.priceWebView.loadUrl("file:///android_asset/historical/historical.html");
+        }
     }
 
     @Override

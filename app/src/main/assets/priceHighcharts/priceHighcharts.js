@@ -24,6 +24,9 @@ function setupHighCharts(jsonString, ticker, color) {
                 year: '%b'
             },
         },
+        tooltip: {
+            split: true
+          },
         legend: false,
         series: [{
           name: ticker,

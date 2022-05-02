@@ -86,8 +86,11 @@ public class DisplayStockInfo extends AppCompatActivity {
             endTimestamp = endTimestamp - latestTimestamp > (5 * 60) ? latestTimestamp : endTimestamp;
             long beginTimestamp = endTimestamp - (6 * 60 * 60);
             String url = basicUrl + "stock/candle?symbol=" + ticker + "&resolution=5" + "&from=" + beginTimestamp + "&to=" + endTimestamp;
-//            Log.e("gzy", url);
             sendRequest(url, new SetupHourlyPriceVariation());
+
+            beginTimestamp = endTimestamp - (2 * 365 * 24 * 60 * 60);
+            url = basicUrl + "stock/candle?symbol=" + ticker + "&resolution=D" + "&from=" + beginTimestamp + "&to=" + endTimestamp;
+            sendRequest(url, new SetupHistoricalChart());
         }
     }
 
@@ -96,6 +99,14 @@ public class DisplayStockInfo extends AppCompatActivity {
         public void setup(JSONObject data) throws JSONException {
             viewPagerAdapter.hourlyPriceData = data;
             viewPagerAdapter.notifyItemChanged(0);
+        }
+    }
+
+    public class SetupHistoricalChart implements SetUpView {
+        @Override
+        public void setup(JSONObject data) throws JSONException {
+            viewPagerAdapter.historicalData = data;
+            viewPagerAdapter.notifyItemChanged(1);
         }
     }
 
