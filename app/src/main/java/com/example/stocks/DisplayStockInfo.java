@@ -6,10 +6,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -147,6 +152,33 @@ public class DisplayStockInfo extends AppCompatActivity {
         congratulationDialog.show();
     }
 
+    void showAlertDialog(String message, Context parentContext) {
+        final Dialog alertDialog = new Dialog(parentContext);
+        alertDialog.setContentView(R.layout.alert_layout);
+        alertDialog.setTitle("alert");
+
+        TextView alertMessageTextView = alertDialog.findViewById(R.id.alertMessage);
+        alertMessageTextView.setText(message);
+
+        Window window = alertDialog.getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+
+        wlp.gravity = Gravity.BOTTOM;
+        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        window.setAttributes(wlp);
+
+        alertDialog.show();
+
+        new android.os.Handler(Looper.getMainLooper()).postDelayed(
+        new Runnable() {
+            public void run() {
+                Log.e("gzy", "times up!");
+                alertDialog.dismiss();
+            }
+        },
+        4000);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -222,17 +254,27 @@ public class DisplayStockInfo extends AppCompatActivity {
                     public void onClick(View view) {
                         Integer boughtShares = editText.getText().toString().equals("") ? 0 : Integer.valueOf(editText.getText().toString());
 
-                        dialog.dismiss();
+//                        dialog.dismiss();
 
                         Float boughtTotal = boughtShares * currentPrice;
                         Float remainedMoney = 0.0F;
                         remainedMoney = amountPref.getFloat(amountKey, remainedMoney);
-                        remainedMoney -= boughtTotal;
-                        amountEditor.putFloat(amountKey, remainedMoney);
-                        amountEditor.apply();
 
-                        String message = "You have successfully bought " + boughtShares + " " + (boughtShares > 1 ? "shares" : "share") + " of " + ticker;
-                        showCongratulationDialog(message);
+                        if (boughtShares <= 0) {
+                            showAlertDialog("Please enter a valid amount", dialog.getContext());
+                        }
+                        else if(boughtTotal > remainedMoney) {
+                            showAlertDialog("Not enough money to buy", dialog.getContext());
+                        }
+                        else {
+                            dialog.dismiss();
+                            remainedMoney -= boughtTotal;
+                            amountEditor.putFloat(amountKey, remainedMoney);
+                            amountEditor.apply();
+
+                            String message = "You have successfully bought " + boughtShares + " " + (boughtShares > 1 ? "shares" : "share") + " of " + ticker;
+                            showCongratulationDialog(message);
+                        }
                     }
                 });
 
