@@ -9,6 +9,7 @@ function setupHighCharts(jsonString, ticker, color) {
         price_chart_data.push(tmp);
       }
 
+    // setupText(ticker);
     Highcharts.chart('container', {
         title: {
           text: ticker + ' Hourly Price Variation'

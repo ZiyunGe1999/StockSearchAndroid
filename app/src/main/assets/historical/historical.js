@@ -17,6 +17,8 @@ function setupHighCharts(jsonString, ticker) {
         ]);
     }
 
+    // setupText(ticker);
+
     Highcharts.stockChart('container', {
         rangeSelector: {
           selected: 2
@@ -113,4 +115,10 @@ function setupHighCharts(jsonString, ticker) {
         }
       ]
       });
+}
+
+function setupText(jsonString) {
+  // data = JSON.parse(jsonString);
+  p = document.getElementById("test");
+  p.innerHTML = jsonString;
 }
