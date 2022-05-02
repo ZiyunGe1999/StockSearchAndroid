@@ -1,11 +1,17 @@
 package com.example.stocks;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,9 +41,12 @@ import java.util.Set;
 public class DisplayStockInfo extends AppCompatActivity {
     final String basicUrl = "https://stocksearchnodejs.wl.r.appspot.com/api/v1/";
     String ticker = "null";
+    String companyFullName = null;
     RequestQueue queue;
     ViewPager2 viewPager;
     ViewPagerAdapter viewPagerAdapter;
+    final Context context = this;
+    Double currentPrice = 0.0;
 
     public interface SetUpView {
         public void setup(JSONObject data) throws JSONException;
@@ -49,6 +58,7 @@ public class DisplayStockInfo extends AppCompatActivity {
 
     public class SetUpCompanyDescription implements SetUpView {
         public void setup(JSONObject data) throws JSONException {
+            companyFullName = data.getString("name");
             String logoUrl = data.getString("logo");
             ImageView logoView = findViewById(R.id.logo);
             Picasso.get().load(logoUrl).into(logoView);
@@ -62,6 +72,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         public void setup(JSONObject data) throws JSONException {
             DecimalFormat df = new DecimalFormat("0.00");
             Double price = data.getDouble("c");
+            currentPrice = price;
             Double change = data.getDouble("d");
             Double changePercentage = data.getDouble("dp");
 
@@ -137,6 +148,45 @@ public class DisplayStockInfo extends AppCompatActivity {
                 viewPager,
                 (tab, position) -> tab.setIcon(position == 0 ? R.drawable.ic_chart : R.drawable.ic_time)
         ).attach();
+
+        // trade button
+        Button tradeButton = findViewById(R.id.trade);
+        tradeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.dialog_layout);
+                dialog.setTitle("Title...");
+
+                TextView header = dialog.findViewById(R.id.dialogHeader);
+                header.setText("Trade " + companyFullName + " Shares");
+
+                EditText editText = dialog.findViewById(R.id.inputValue);
+                TextView tradeCaculateTextView = dialog.findViewById(R.id.tradeCaculate);
+                DecimalFormat df = new DecimalFormat("0.00");
+                tradeCaculateTextView.setText("0 * $" + df.format(currentPrice) + "/share = 0.00");
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        Integer boughtShares = editText.getText().toString().equals("") ? 0 : Integer.valueOf(editText.getText().toString());
+                        Double boughtTotal = boughtShares * currentPrice;
+                        tradeCaculateTextView.setText(boughtShares.toString() + " * $" + df.format(currentPrice) + "/share = " + df.format(boughtTotal));
+                    }
+                });
+
+                dialog.show();
+            }
+        });
     }
 
     public void sendRequest(String url, SetUpView setupView) {

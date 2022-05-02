@@ -94,6 +94,83 @@
                         android:layout_width="match_parent"/>
             </com.google.android.material.tabs.TabLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Portfolio"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:layout_marginLeft="5sp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TableLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10sp">
+                    <TableRow>
+                        <TextView
+                            android:text="Shares Owned:"
+                            android:textColor="@color/black"
+                            android:padding="3dip"/>
+                        <TextView
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:padding="3dip"/>
+                    </TableRow>
+                    <TableRow>
+                        <TextView
+                            android:text="Avg. Cost/Share:"
+                            android:textColor="@color/black"
+                            android:padding="3dip" />
+                        <TextView
+                            android:text="$0.00"
+                            android:textColor="@color/black"
+                            android:padding="3dip" />
+                    </TableRow>
+                    <TableRow>
+                        <TextView
+                            android:text="Total Cost:"
+                            android:textColor="@color/black"
+                            android:padding="3dip" />
+                        <TextView
+                            android:text="$0.00"
+                            android:textColor="@color/black"
+                            android:padding="3dip" />
+                    </TableRow>
+                    <TableRow>
+                        <TextView
+                            android:text="Change:"
+                            android:textColor="@color/black"
+                            android:padding="3dip" />
+                        <TextView
+                            android:text="$0.00"
+                            android:padding="3dip" />
+                    </TableRow>
+                    <TableRow>
+                        <TextView
+                            android:text="Market Value:"
+                            android:textColor="@color/black"
+                            android:padding="3dip" />
+                        <TextView
+                            android:text="$0.00"
+                            android:padding="3dip" />
+                    </TableRow>
+                </TableLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center">
+                    <Button
+                        android:id="@+id/trade"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Trade"/>
+                </LinearLayout>
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
