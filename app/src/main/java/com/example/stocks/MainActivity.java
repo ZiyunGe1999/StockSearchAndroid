@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -60,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
         populateRecyclerView();
         enableSwipeToDeleteAndUndo();
 
-
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("Amount", 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putFloat("amount", 25000.0F);
+        editor.apply();
     }
 
     public void dispalyStockInfoActivity(String s) {

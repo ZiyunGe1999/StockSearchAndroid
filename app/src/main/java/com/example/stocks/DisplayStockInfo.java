@@ -3,6 +3,7 @@ package com.example.stocks;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -46,7 +47,10 @@ public class DisplayStockInfo extends AppCompatActivity {
     ViewPager2 viewPager;
     ViewPagerAdapter viewPagerAdapter;
     final Context context = this;
-    Double currentPrice = 0.0;
+    Float currentPrice = 0.0F;
+
+    final String amountPreferenceName = "Amount";
+    final String amountKey = "amount";
 
     public interface SetUpView {
         public void setup(JSONObject data) throws JSONException;
@@ -64,6 +68,7 @@ public class DisplayStockInfo extends AppCompatActivity {
             Picasso.get().load(logoUrl).into(logoView);
 
             setTextForView(data.getString("ticker"), findViewById(R.id.ticker));
+            setTextForView(companyFullName, findViewById(R.id.company));
         }
     }
 
@@ -72,7 +77,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         public void setup(JSONObject data) throws JSONException {
             DecimalFormat df = new DecimalFormat("0.00");
             Double price = data.getDouble("c");
-            currentPrice = price;
+            currentPrice = price.floatValue();
             Double change = data.getDouble("d");
             Double changePercentage = data.getDouble("dp");
 
@@ -108,6 +113,7 @@ public class DisplayStockInfo extends AppCompatActivity {
     public class SetupHourlyPriceVariation implements SetUpView {
         @Override
         public void setup(JSONObject data) throws JSONException {
+            Log.e("gzy", "get data and action the hourlyPrice page now");
             viewPagerAdapter.hourlyPriceData = data;
             viewPagerAdapter.notifyItemChanged(0);
         }
@@ -116,9 +122,29 @@ public class DisplayStockInfo extends AppCompatActivity {
     public class SetupHistoricalChart implements SetUpView {
         @Override
         public void setup(JSONObject data) throws JSONException {
+            Log.e("gzy", "get data and action the historical page now");
             viewPagerAdapter.historicalData = data;
             viewPagerAdapter.notifyItemChanged(1);
         }
+    }
+
+    void showCongratulationDialog(String message) {
+        final Dialog congratulationDialog = new Dialog(context);
+        congratulationDialog.setContentView(R.layout.congratulation_dialog_layout);
+        congratulationDialog.setTitle("congratulation");
+
+        TextView messageTextView = congratulationDialog.findViewById(R.id.congratulationMessage);
+        messageTextView.setText(message);
+
+        Button doneButton = congratulationDialog.findViewById(R.id.doneButton);
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                congratulationDialog.dismiss();
+            }
+        });
+
+        congratulationDialog.show();
     }
 
     @Override
@@ -165,6 +191,12 @@ public class DisplayStockInfo extends AppCompatActivity {
                 TextView tradeCaculateTextView = dialog.findViewById(R.id.tradeCaculate);
                 DecimalFormat df = new DecimalFormat("0.00");
                 tradeCaculateTextView.setText("0 * $" + df.format(currentPrice) + "/share = 0.00");
+                TextView tradeRemainedMoneyTextView = dialog.findViewById(R.id.tradeRemainedMoney);
+                SharedPreferences amountPref = getApplicationContext().getSharedPreferences(amountPreferenceName, Context.MODE_PRIVATE);
+                SharedPreferences.Editor amountEditor = amountPref.edit();
+                Float currentAmount = 0.0F;
+                currentAmount = amountPref.getFloat(amountKey, currentAmount);
+                tradeRemainedMoneyTextView.setText("$" + df.format(currentAmount) + " to buy " + ticker);
                 editText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -179,8 +211,28 @@ public class DisplayStockInfo extends AppCompatActivity {
                     @Override
                     public void afterTextChanged(Editable editable) {
                         Integer boughtShares = editText.getText().toString().equals("") ? 0 : Integer.valueOf(editText.getText().toString());
-                        Double boughtTotal = boughtShares * currentPrice;
+                        Float boughtTotal = boughtShares * currentPrice;
                         tradeCaculateTextView.setText(boughtShares.toString() + " * $" + df.format(currentPrice) + "/share = " + df.format(boughtTotal));
+                    }
+                });
+
+                Button buyButton = dialog.findViewById(R.id.buyBotton);
+                buyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Integer boughtShares = editText.getText().toString().equals("") ? 0 : Integer.valueOf(editText.getText().toString());
+
+                        dialog.dismiss();
+
+                        Float boughtTotal = boughtShares * currentPrice;
+                        Float remainedMoney = 0.0F;
+                        remainedMoney = amountPref.getFloat(amountKey, remainedMoney);
+                        remainedMoney -= boughtTotal;
+                        amountEditor.putFloat(amountKey, remainedMoney);
+                        amountEditor.apply();
+
+                        String message = "You have successfully bought " + boughtShares + " " + (boughtShares > 1 ? "shares" : "share") + " of " + ticker;
+                        showCongratulationDialog(message);
                     }
                 });
 

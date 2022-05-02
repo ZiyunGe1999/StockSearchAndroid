@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20sp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Congratulations!"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textSize="30sp"/>
+    <TextView
+        android:id="@+id/congratulationMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:layout_marginBottom="10sp"/>
+    <Button
+        android:id="@+id/doneButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DONE"/>
+
+
+</LinearLayout>
