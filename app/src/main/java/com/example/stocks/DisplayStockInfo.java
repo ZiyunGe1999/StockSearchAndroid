@@ -56,6 +56,12 @@ public class DisplayStockInfo extends AppCompatActivity {
 
     final String amountPreferenceName = "Amount";
     final String amountKey = "amount";
+    SharedPreferences amountPref;
+    SharedPreferences.Editor amountEditor;
+
+    final  String portfolioPreferenceName = "Portfolio";
+    SharedPreferences portfolioPref;
+    SharedPreferences.Editor portfolioEditor;
 
     public interface SetUpView {
         public void setup(JSONObject data) throws JSONException;
@@ -176,7 +182,7 @@ public class DisplayStockInfo extends AppCompatActivity {
                 alertDialog.dismiss();
             }
         },
-        4000);
+        3500);
     }
 
     @Override
@@ -207,6 +213,11 @@ public class DisplayStockInfo extends AppCompatActivity {
                 (tab, position) -> tab.setIcon(position == 0 ? R.drawable.ic_chart : R.drawable.ic_time)
         ).attach();
 
+        amountPref = getApplicationContext().getSharedPreferences(amountPreferenceName, Context.MODE_PRIVATE);
+        amountEditor = amountPref.edit();
+        portfolioPref = getApplicationContext().getSharedPreferences(portfolioPreferenceName, Context.MODE_PRIVATE);
+        portfolioEditor = portfolioPref.edit();
+
         // trade button
         Button tradeButton = findViewById(R.id.trade);
         tradeButton.setOnClickListener(new View.OnClickListener() {
@@ -224,8 +235,8 @@ public class DisplayStockInfo extends AppCompatActivity {
                 DecimalFormat df = new DecimalFormat("0.00");
                 tradeCaculateTextView.setText("0 * $" + df.format(currentPrice) + "/share = 0.00");
                 TextView tradeRemainedMoneyTextView = dialog.findViewById(R.id.tradeRemainedMoney);
-                SharedPreferences amountPref = getApplicationContext().getSharedPreferences(amountPreferenceName, Context.MODE_PRIVATE);
-                SharedPreferences.Editor amountEditor = amountPref.edit();
+//                SharedPreferences amountPref = getApplicationContext().getSharedPreferences(amountPreferenceName, Context.MODE_PRIVATE);
+//                SharedPreferences.Editor amountEditor = amountPref.edit();
                 Float currentAmount = 0.0F;
                 currentAmount = amountPref.getFloat(amountKey, currentAmount);
                 tradeRemainedMoneyTextView.setText("$" + df.format(currentAmount) + " to buy " + ticker);
@@ -272,7 +283,47 @@ public class DisplayStockInfo extends AppCompatActivity {
                             amountEditor.putFloat(amountKey, remainedMoney);
                             amountEditor.apply();
 
+                            Integer holdShares = 0;
+                            holdShares = portfolioPref.getInt(ticker, holdShares);
+                            Log.e("gzy", "boughtShares: " + boughtShares + " | holdShares: " + holdShares);
+                            portfolioEditor.putInt(ticker, boughtShares + holdShares);
+                            portfolioEditor.apply();
+
                             String message = "You have successfully bought " + boughtShares + " " + (boughtShares > 1 ? "shares" : "share") + " of " + ticker;
+                            showCongratulationDialog(message);
+                        }
+                    }
+                });
+
+                Button sellButton = dialog.findViewById(R.id.sellButton);
+                sellButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Integer sellShares = editText.getText().toString().equals("") ? 0 : Integer.valueOf(editText.getText().toString());
+
+                        Integer holdShares = 0;
+                        holdShares = portfolioPref.getInt(ticker, holdShares);
+                        Log.e("gzy", "you hold " + holdShares + " shares of " + ticker);
+
+                        if (sellShares <= 0) {
+                            showAlertDialog("Please enter a valid amount", dialog.getContext());
+                        }
+                        else if (sellShares > holdShares) {
+                            showAlertDialog("Not enough shares to sell", dialog.getContext());
+                        }
+                        else {
+                            dialog.dismiss();
+                            Float sellTotal = sellShares * currentPrice;
+                            Float remainedMoney = 0.0F;
+                            remainedMoney = amountPref.getFloat(amountKey, remainedMoney);
+                            remainedMoney += sellTotal;
+                            amountEditor.putFloat(amountKey, remainedMoney);
+                            amountEditor.apply();
+
+                            portfolioEditor.putInt(ticker, holdShares - sellShares);
+                            portfolioEditor.apply();
+
+                            String message = "You have successfully sold " + sellShares + " " + (sellShares > 1 ? "shares" : "share") + " of " + ticker;
                             showCongratulationDialog(message);
                         }
                     }

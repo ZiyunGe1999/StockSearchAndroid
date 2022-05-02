@@ -63,8 +63,10 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("Amount", 0);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putFloat("amount", 25000.0F);
-        editor.apply();
+        if (!pref.contains("amount")) {
+            editor.putFloat("amount", 25000.0F);
+            editor.apply();
+        }
     }
 
     public void dispalyStockInfoActivity(String s) {
