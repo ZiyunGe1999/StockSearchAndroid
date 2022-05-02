@@ -53,6 +53,7 @@ public class DisplayStockInfo extends AppCompatActivity {
     ViewPagerAdapter viewPagerAdapter;
     final Context context = this;
     Float currentPrice = 0.0F;
+    DecimalFormat df;
 
     final String amountPreferenceName = "Amount";
     final String amountKey = "amount";
@@ -63,12 +64,53 @@ public class DisplayStockInfo extends AppCompatActivity {
     SharedPreferences portfolioPref;
     SharedPreferences.Editor portfolioEditor;
 
+    final String shareCostPreferenceName = "ShareCost";
+    SharedPreferences shareCostPref;
+    SharedPreferences.Editor shareCostEditor;
+
     public interface SetUpView {
         public void setup(JSONObject data) throws JSONException;
     }
 
     public void setTextForView(String str, TextView view) {
         view.setText(str);
+    }
+
+    public void setupPortfolio() {
+        Integer currentSharesOwned = 0;
+        currentSharesOwned = portfolioPref.getInt(ticker, currentSharesOwned);
+
+        TextView sharesOwnedTextView = findViewById(R.id.sharesOwned);
+        sharesOwnedTextView.setText(currentSharesOwned.toString());
+
+        Float currentSharesTotalCost = 0.0F;
+        currentSharesTotalCost = shareCostPref.getFloat(ticker, currentSharesTotalCost);
+        Float avgCost = (currentSharesOwned > 0) ? currentSharesTotalCost / currentSharesOwned : 0;
+        TextView avgCostTextView = findViewById(R.id.avgCost);
+        avgCostTextView.setText("$" + df.format(avgCost));
+        TextView totalCostTextView = findViewById(R.id.totalCost);
+        totalCostTextView.setText("$" + df.format(currentSharesTotalCost));
+
+        Float sharesTotalCostNew = currentSharesOwned * currentPrice;
+        Float costChange = sharesTotalCostNew - currentSharesTotalCost;
+        costChange = (costChange >= -0.001 && costChange <= 0.001) ? 0.0F : costChange;
+        Log.e("gzy", "bought: " + currentSharesTotalCost + " if sold now: " + sharesTotalCostNew + " costChange: " + costChange);
+        TextView costChangeTextView = findViewById(R.id.portfolioChange);
+        TextView maketValueTextView = findViewById(R.id.marketValue);
+        costChangeTextView.setText("$" + df.format(costChange));
+        maketValueTextView.setText("$" + df.format(sharesTotalCostNew));
+        if (costChange > 0) {
+            costChangeTextView.setTextColor(Color.GREEN);
+            maketValueTextView.setTextColor(Color.GREEN);
+        }
+        else if (costChange < 0) {
+            costChangeTextView.setTextColor(Color.RED);
+            maketValueTextView.setTextColor(Color.RED);
+        }
+        else {
+            costChangeTextView.setTextColor(Color.GRAY);
+            maketValueTextView.setTextColor(Color.GRAY);
+        }
     }
 
     public class SetUpCompanyDescription implements SetUpView {
@@ -86,7 +128,7 @@ public class DisplayStockInfo extends AppCompatActivity {
     public class SetUpCompanyLatestPrice implements SetUpView {
         @Override
         public void setup(JSONObject data) throws JSONException {
-            DecimalFormat df = new DecimalFormat("0.00");
+//            DecimalFormat df = new DecimalFormat("0.00");
             Double price = data.getDouble("c");
             currentPrice = price.floatValue();
             Double change = data.getDouble("d");
@@ -106,6 +148,9 @@ public class DisplayStockInfo extends AppCompatActivity {
                 changeTextView.setTextColor(Color.GREEN);
                 trendImageView.setImageDrawable(getResources().getDrawable( R.drawable.ic_trend_up ));
             }
+
+            // setup portfolio
+            setupPortfolio();
 
             // Setup two hourly price charts
             long endTimestamp = System.currentTimeMillis() / 1000L;
@@ -190,6 +235,8 @@ public class DisplayStockInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_stock_info);
 
+        df = new DecimalFormat("0.00");
+
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
@@ -217,6 +264,8 @@ public class DisplayStockInfo extends AppCompatActivity {
         amountEditor = amountPref.edit();
         portfolioPref = getApplicationContext().getSharedPreferences(portfolioPreferenceName, Context.MODE_PRIVATE);
         portfolioEditor = portfolioPref.edit();
+        shareCostPref = getApplicationContext().getSharedPreferences(shareCostPreferenceName, Context.MODE_PRIVATE);
+        shareCostEditor = shareCostPref.edit();
 
         // trade button
         Button tradeButton = findViewById(R.id.trade);
@@ -232,7 +281,7 @@ public class DisplayStockInfo extends AppCompatActivity {
 
                 EditText editText = dialog.findViewById(R.id.inputValue);
                 TextView tradeCaculateTextView = dialog.findViewById(R.id.tradeCaculate);
-                DecimalFormat df = new DecimalFormat("0.00");
+//                DecimalFormat df = new DecimalFormat("0.00");
                 tradeCaculateTextView.setText("0 * $" + df.format(currentPrice) + "/share = 0.00");
                 TextView tradeRemainedMoneyTextView = dialog.findViewById(R.id.tradeRemainedMoney);
 //                SharedPreferences amountPref = getApplicationContext().getSharedPreferences(amountPreferenceName, Context.MODE_PRIVATE);
@@ -289,6 +338,20 @@ public class DisplayStockInfo extends AppCompatActivity {
                             portfolioEditor.putInt(ticker, boughtShares + holdShares);
                             portfolioEditor.apply();
 
+                            Float holdCost = 0.0F;
+                            holdCost = shareCostPref.getFloat(ticker, holdCost);
+                            shareCostEditor.putFloat(ticker, boughtTotal + holdCost);
+                            shareCostEditor.apply();
+
+                            new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                                new Runnable() {
+                                    public void run() {
+                                        Log.e("gzy", "buy setupPortfolio times up!");
+                                        setupPortfolio();
+                                    }
+                                },
+                                500);
+
                             String message = "You have successfully bought " + boughtShares + " " + (boughtShares > 1 ? "shares" : "share") + " of " + ticker;
                             showCongratulationDialog(message);
                         }
@@ -322,6 +385,20 @@ public class DisplayStockInfo extends AppCompatActivity {
 
                             portfolioEditor.putInt(ticker, holdShares - sellShares);
                             portfolioEditor.apply();
+
+                            Float holdCost = 0.0F;
+                            holdCost = shareCostPref.getFloat(ticker, holdCost);
+                            shareCostEditor.putFloat(ticker, holdCost - sellTotal);
+                            shareCostEditor.apply();
+
+                            new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                                    new Runnable() {
+                                        public void run() {
+                                            Log.e("gzy", "sell setupPortfolio times up!");
+                                            setupPortfolio();
+                                        }
+                                    },
+                                    500);
 
                             String message = "You have successfully sold " + sellShares + " " + (sellShares > 1 ? "shares" : "share") + " of " + ticker;
                             showCongratulationDialog(message);

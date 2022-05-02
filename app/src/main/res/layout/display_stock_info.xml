@@ -116,6 +116,7 @@
                             android:textColor="@color/black"
                             android:padding="3dip"/>
                         <TextView
+                            android:id="@+id/sharesOwned"
                             android:text="0"
                             android:textColor="@color/black"
                             android:padding="3dip"/>
@@ -126,6 +127,7 @@
                             android:textColor="@color/black"
                             android:padding="3dip" />
                         <TextView
+                            android:id="@+id/avgCost"
                             android:text="$0.00"
                             android:textColor="@color/black"
                             android:padding="3dip" />
@@ -136,6 +138,7 @@
                             android:textColor="@color/black"
                             android:padding="3dip" />
                         <TextView
+                            android:id="@+id/totalCost"
                             android:text="$0.00"
                             android:textColor="@color/black"
                             android:padding="3dip" />
@@ -146,6 +149,7 @@
                             android:textColor="@color/black"
                             android:padding="3dip" />
                         <TextView
+                            android:id="@+id/portfolioChange"
                             android:text="$0.00"
                             android:padding="3dip" />
                     </TableRow>
@@ -155,6 +159,7 @@
                             android:textColor="@color/black"
                             android:padding="3dip" />
                         <TextView
+                            android:id="@+id/marketValue"
                             android:text="$0.00"
                             android:padding="3dip" />
                     </TableRow>
