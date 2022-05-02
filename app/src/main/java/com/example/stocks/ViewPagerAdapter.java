@@ -1,5 +1,6 @@
 package com.example.stocks;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewPagerViewHolder> {
+    JSONObject hourlyPriceData = null;
+    String ticker;
+    String color = null;
+
+    ViewPagerAdapter(String stock) {
+        ticker = stock;
+    }
+
     @NonNull
     @Override
     public ViewPagerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -23,15 +32,14 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewPagerViewHolder holder, int position) {
+//        Log.e("gzy", "it's position " + position);
         holder.priceWebView.setWebViewClient(new WebViewClient(){
             public void onPageFinished(WebView view, String url){
-                JSONObject test = new JSONObject();
-                try {
-                    test.put("test", "hello world");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (hourlyPriceData != null && color != null) {
+//                    Log.e("gzy", "inside setup");
+//                    Log.e("gzy", hourlyPriceData.toString());
+                    holder.priceWebView.loadUrl("javascript:setupHighCharts('" + hourlyPriceData.toString() + "', '" + ticker + "', '" + color + "' )");
                 }
-                holder.priceWebView.loadUrl("javascript:setupText('"+test.toString()+"')");
             }
         });
         holder.priceWebView.loadUrl("file:///android_asset/priceHighcharts/priceHighcharts.html");

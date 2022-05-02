@@ -28,13 +28,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Set;
 
 public class DisplayStockInfo extends AppCompatActivity {
     final String basicUrl = "https://stocksearchnodejs.wl.r.appspot.com/api/v1/";
+    String ticker = "null";
     RequestQueue queue;
     ViewPager2 viewPager;
+    ViewPagerAdapter viewPagerAdapter;
 
     public interface SetUpView {
         public void setup(JSONObject data) throws JSONException;
@@ -67,13 +70,32 @@ public class DisplayStockInfo extends AppCompatActivity {
             setTextForView("$" + df.format(change) + " (" + df.format(changePercentage) + "%)", changeTextView);
             ImageView trendImageView = findViewById(R.id.trend);
             if (change < 0) {
+                viewPagerAdapter.color = "red";
                 changeTextView.setTextColor(Color.RED);
                 trendImageView.setImageDrawable(getResources().getDrawable( R.drawable.ic_trend_down ));
             }
             else {
+                viewPagerAdapter.color = "green";
                 changeTextView.setTextColor(Color.GREEN);
                 trendImageView.setImageDrawable(getResources().getDrawable( R.drawable.ic_trend_up ));
             }
+
+            // Setup two hourly price charts
+            long endTimestamp = System.currentTimeMillis() / 1000L;
+            long latestTimestamp = data.getLong("t");
+            endTimestamp = endTimestamp - latestTimestamp > (5 * 60) ? latestTimestamp : endTimestamp;
+            long beginTimestamp = endTimestamp - (6 * 60 * 60);
+            String url = basicUrl + "stock/candle?symbol=" + ticker + "&resolution=5" + "&from=" + beginTimestamp + "&to=" + endTimestamp;
+//            Log.e("gzy", url);
+            sendRequest(url, new SetupHourlyPriceVariation());
+        }
+    }
+
+    public class SetupHourlyPriceVariation implements SetUpView {
+        @Override
+        public void setup(JSONObject data) throws JSONException {
+            viewPagerAdapter.hourlyPriceData = data;
+            viewPagerAdapter.notifyItemChanged(0);
         }
     }
 
@@ -86,6 +108,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         message = message.toUpperCase();
+        ticker = message;
 
         setTitle(message);
 
@@ -95,7 +118,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         sendRequest(basicUrl + "quote?symbol=" + message, new SetUpCompanyLatestPrice());
 
         viewPager = findViewById(R.id.pager);
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter();
+        viewPagerAdapter = new ViewPagerAdapter(ticker);
         viewPager.setAdapter(viewPagerAdapter);
 
         com.google.android.material.tabs.TabLayout tabLayout = findViewById(R.id.tab_layout);
