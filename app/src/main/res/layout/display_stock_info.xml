@@ -101,7 +101,8 @@
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:layout_marginLeft="5sp"/>
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="5sp"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -175,6 +176,66 @@
                         android:text="Trade"/>
                 </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Stats"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="5sp"/>
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="5sp">
+                <TableRow
+                    android:gravity="center">
+                    <TextView
+                        android:text="Open Price:"
+                        android:padding="3dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/openPirce"
+                        android:text="$0.00"
+                        android:padding="3dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:text="High Price:"
+                        android:padding="3dip"
+                        android:layout_marginLeft="50sp"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/highPirce"
+                        android:text="$0.00"
+                        android:padding="3dip"
+                        android:textColor="@color/black"/>
+                </TableRow>
+                <TableRow
+                    android:gravity="center">
+                    <TextView
+                        android:text="Low Price:"
+                        android:padding="3dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/lowPirce"
+                        android:text="$0.00"
+                        android:padding="3dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:text="Prev. Close:"
+                        android:padding="3dip"
+                        android:layout_marginLeft="50sp"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/prevClose"
+                        android:text="$0.00"
+                        android:padding="3dip"
+                        android:textColor="@color/black"/>
+                </TableRow>
+            </TableLayout>
 
         </LinearLayout>
     </ScrollView>

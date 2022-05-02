@@ -163,6 +163,16 @@ public class DisplayStockInfo extends AppCompatActivity {
             beginTimestamp = endTimestamp - (2 * 365 * 24 * 60 * 60);
             url = basicUrl + "stock/candle?symbol=" + ticker + "&resolution=D" + "&from=" + beginTimestamp + "&to=" + endTimestamp;
             sendRequest(url, new SetupHistoricalChart());
+
+            // setup stats
+            Double highPrice = data.getDouble("h");
+            setTextForView("$" + df.format(highPrice), findViewById(R.id.highPirce));
+            Double lowPrice = data.getDouble("l");
+            setTextForView("$" + df.format(lowPrice), findViewById(R.id.lowPirce));
+            Double openPrice = data.getDouble("o");
+            setTextForView("$" + df.format(openPrice), findViewById(R.id.openPirce));
+            Double prevClosePrice = data.getDouble("pc");
+            setTextForView("$" + df.format(prevClosePrice), findViewById(R.id.prevClose));
         }
     }
 
