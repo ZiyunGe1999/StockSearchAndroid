@@ -1,27 +1,37 @@
 package com.example.stocks;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.car.ui.toolbar.TabLayout;
@@ -30,12 +40,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,6 +66,7 @@ public class DisplayStockInfo extends AppCompatActivity {
     final Context context = this;
     Float currentPrice = 0.0F;
     DecimalFormat df;
+    String webpage;
 
     final String amountPreferenceName = "Amount";
     final String amountKey = "amount";
@@ -67,6 +80,18 @@ public class DisplayStockInfo extends AppCompatActivity {
     final String shareCostPreferenceName = "ShareCost";
     SharedPreferences shareCostPref;
     SharedPreferences.Editor shareCostEditor;
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     public interface SetUpView {
         public void setup(JSONObject data) throws JSONException;
@@ -113,6 +138,33 @@ public class DisplayStockInfo extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ResourceAsColor")
+    public void setupCompanyPeers(JSONArray jsonArray) throws JSONException {
+        Log.e("gzy", jsonArray.toString());
+        LinearLayout companyPeersLinearLayout = findViewById(R.id.companyPeers);
+        for (Integer i = 0; i < jsonArray.length(); i++) {
+            String peer = jsonArray.getString(i);
+            TextView tv = new TextView(getApplicationContext());
+            setTextForView(peer + "  ", tv);
+            tv.setTextColor(R.color.blue);
+//            tv.setTextSize(20);
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(context, DisplayStockInfo.class);
+                    intent.putExtra(MainActivity.EXTRA_MESSAGE, peer);
+                    startActivity(intent);
+                }
+            });
+            companyPeersLinearLayout.addView(tv);
+        }
+    }
+
+    public void webpageOnClick(View view){
+        Intent openurl = new Intent(Intent.ACTION_VIEW, Uri.parse(webpage));
+        startActivity(openurl);
+    }
+
     public class SetUpCompanyDescription implements SetUpView {
         public void setup(JSONObject data) throws JSONException {
             companyFullName = data.getString("name");
@@ -122,6 +174,17 @@ public class DisplayStockInfo extends AppCompatActivity {
 
             setTextForView(data.getString("ticker"), findViewById(R.id.ticker));
             setTextForView(companyFullName, findViewById(R.id.company));
+
+            // setup about
+            String ipo = data.getString("ipo");
+            Integer index = ipo.indexOf("-");
+            ipo = ipo.substring(index + 1) + "-" + ipo.substring(0, index);
+            setTextForView(ipo, findViewById(R.id.ipoStartDate));
+            String industry = data.getString("finnhubIndustry");
+            setTextForView(industry, findViewById(R.id.industry));
+            webpage = data.getString("weburl");
+            TextView webpageTextView = findViewById(R.id.webpage);
+            setTextForView(webpage, webpageTextView);
         }
     }
 
@@ -259,6 +322,7 @@ public class DisplayStockInfo extends AppCompatActivity {
 
         sendRequest(basicUrl + "stock/profile2?symbol=" + message, new SetUpCompanyDescription());
         sendRequest(basicUrl + "quote?symbol=" + message, new SetUpCompanyLatestPrice());
+        sendRequest(basicUrl + "stock/peers?symbol=" + message, null);
 
         viewPager = findViewById(R.id.pager);
         viewPagerAdapter = new ViewPagerAdapter(ticker);
@@ -423,26 +487,45 @@ public class DisplayStockInfo extends AppCompatActivity {
 
     public void sendRequest(String url, SetUpView setupView) {
         // Request a json response from the provided URL.
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        if (url.contains("peers")) {
+            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    try {
+                        setupCompanyPeers(response);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            setupView.setup(response);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                }
+            });
+            queue.add(jsonArrayRequest);
+        }
+        else {
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                setupView.setup(response);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                }, new Response.ErrorListener() {
+                    }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
 
-                    }
-                });
-
-        // Add the request to the RequestQueue.
-        queue.add(jsonObjectRequest);
+                        }
+                    });
+            // Add the request to the RequestQueue.
+            queue.add(jsonObjectRequest);
+        }
     }
 }
