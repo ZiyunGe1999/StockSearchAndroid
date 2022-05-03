@@ -414,6 +414,11 @@
                 android:layout_width="match_parent"
                 android:layout_marginTop="20sp"
                 android:layout_height="420sp"/>
+            <WebView
+                android:id="@+id/epsChart"
+                android:layout_width="match_parent"
+                android:layout_marginTop="20sp"
+                android:layout_height="420sp"/>
 
         </LinearLayout>
     </ScrollView>

@@ -305,6 +305,17 @@ public class DisplayStockInfo extends AppCompatActivity {
         trendsWebView.loadUrl("file:///android_asset/trends/trends.html");
     }
 
+    public void setupEPS(JSONArray data) {
+        WebView epsWebView = findViewById(R.id.epsChart);
+        epsWebView.getSettings().setJavaScriptEnabled(true);
+        epsWebView.setWebViewClient(new WebViewClient() {
+            public void onPageFinished(WebView view, String url) {
+                epsWebView.loadUrl("javascript:setupHighCharts('" + data.toString() + "' )");
+            }
+        });
+        epsWebView.loadUrl("file:///android_asset/eps/eps.html");
+    }
+
     void showCongratulationDialog(String message) {
         final Dialog congratulationDialog = new Dialog(context);
         congratulationDialog.setContentView(R.layout.congratulation_dialog_layout);
@@ -373,6 +384,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         sendRequest(basicUrl + "stock/peers?symbol=" + message, null);
         sendRequest(basicUrl + "stock/social-sentiment?symbol=" + message + "&from=2022-01-01", new SetupCompanySocialSentiments());
         sendRequest(basicUrl + "stock/recommendation?symbol=" + message, null);
+        sendRequest(basicUrl + "stock/earnings?symbol=" + message, null);
 
         viewPager = findViewById(R.id.pager);
         viewPagerAdapter = new ViewPagerAdapter(ticker);
@@ -561,6 +573,20 @@ public class DisplayStockInfo extends AppCompatActivity {
                 @Override
                 public void onResponse(JSONArray response) {
                     setupTrends(response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            queue.add(jsonArrayRequest);
+        }
+        else if (url.contains("earnings")) {
+            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    setupEPS(response);
                 }
             }, new Response.ErrorListener() {
                 @Override
