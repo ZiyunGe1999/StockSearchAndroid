@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -293,6 +294,17 @@ public class DisplayStockInfo extends AppCompatActivity {
         }
     }
 
+    public void setupTrends(JSONArray data){
+        WebView trendsWebView = findViewById(R.id.trendsChart);
+        trendsWebView.getSettings().setJavaScriptEnabled(true);
+        trendsWebView.setWebViewClient(new WebViewClient(){
+            public void onPageFinished(WebView view, String url) {
+                trendsWebView.loadUrl("javascript:setupHighCharts('" + data.toString() + "' )");
+            }
+        });
+        trendsWebView.loadUrl("file:///android_asset/trends/trends.html");
+    }
+
     void showCongratulationDialog(String message) {
         final Dialog congratulationDialog = new Dialog(context);
         congratulationDialog.setContentView(R.layout.congratulation_dialog_layout);
@@ -360,6 +372,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         sendRequest(basicUrl + "quote?symbol=" + message, new SetUpCompanyLatestPrice());
         sendRequest(basicUrl + "stock/peers?symbol=" + message, null);
         sendRequest(basicUrl + "stock/social-sentiment?symbol=" + message + "&from=2022-01-01", new SetupCompanySocialSentiments());
+        sendRequest(basicUrl + "stock/recommendation?symbol=" + message, null);
 
         viewPager = findViewById(R.id.pager);
         viewPagerAdapter = new ViewPagerAdapter(ticker);
@@ -534,6 +547,20 @@ public class DisplayStockInfo extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            queue.add(jsonArrayRequest);
+        }
+        else if (url.contains("recommendation")) {
+            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    setupTrends(response);
                 }
             }, new Response.ErrorListener() {
                 @Override

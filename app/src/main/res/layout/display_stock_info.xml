@@ -409,6 +409,12 @@
                 </TableRow>
             </TableLayout>
 
+            <WebView
+                android:id="@+id/trendsChart"
+                android:layout_width="match_parent"
+                android:layout_marginTop="20sp"
+                android:layout_height="420sp"/>
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
