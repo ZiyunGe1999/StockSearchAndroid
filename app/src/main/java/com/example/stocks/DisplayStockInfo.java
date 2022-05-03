@@ -33,6 +33,8 @@ import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.car.ui.toolbar.TabLayout;
@@ -52,8 +54,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
 
@@ -362,6 +368,33 @@ public class DisplayStockInfo extends AppCompatActivity {
         3500);
     }
 
+    void setupTopNews(JSONArray data) throws JSONException {
+        ArrayList<News> newsData = new ArrayList<>();
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject obj = data.getJSONObject(i);
+            if (newsData.size() >= 20) {
+                break;
+            }
+            if (obj.has("source") && obj.has("datetime") && obj.has("headline") && obj.has("summary") && obj.has("url") && obj.has("image") && !obj.getString("image").isEmpty()) {
+                News news = new News(obj.getString("source"), obj.getLong("datetime"), obj.getString("headline"), obj.getString("summary"), obj.getString("url"), obj.getString("image"));
+                newsData.add(news);
+            }
+        }
+        RecyclerView newsRecyclerView = findViewById(R.id.newsView);
+        NewsAdaptor newsAdaptor = new NewsAdaptor(newsData, this);
+        newsRecyclerView.setAdapter(newsAdaptor);
+    }
+
+    void requestTopNews() {
+        long endTimestamp = System.currentTimeMillis();
+        long startTimestamp = endTimestamp - (7 * 24 * 60 * 60 * 1000);
+        Date endDate = new Date(endTimestamp);
+        Date startDate = new Date(startTimestamp);
+        DateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+        String url = basicUrl + "company-news?symbol=" + ticker + "&from=" + f.format(startDate) + "&to=" + f.format(endDate);
+        sendRequest(url, null);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -385,6 +418,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         sendRequest(basicUrl + "stock/social-sentiment?symbol=" + message + "&from=2022-01-01", new SetupCompanySocialSentiments());
         sendRequest(basicUrl + "stock/recommendation?symbol=" + message, null);
         sendRequest(basicUrl + "stock/earnings?symbol=" + message, null);
+        requestTopNews();
 
         viewPager = findViewById(R.id.pager);
         viewPagerAdapter = new ViewPagerAdapter(ticker);
@@ -545,6 +579,12 @@ public class DisplayStockInfo extends AppCompatActivity {
                 dialog.show();
             }
         });
+
+//        RecyclerView newsRecyclerView = findViewById(R.id.newsView);
+////        LinearLayoutManager newsLinearLayoutManager = new LinearLayoutManager(this);
+////        newsRecyclerView.setLayoutManager(newsLinearLayoutManager);
+//        NewsAdaptor newsAdaptor = new NewsAdaptor(this);
+//        newsRecyclerView.setAdapter(newsAdaptor);
     }
 
     public void sendRequest(String url, SetUpView setupView) {
@@ -587,6 +627,24 @@ public class DisplayStockInfo extends AppCompatActivity {
                 @Override
                 public void onResponse(JSONArray response) {
                     setupEPS(response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            queue.add(jsonArrayRequest);
+        }
+        else if (url.contains("company-news")) {
+            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    try {
+                        setupTopNews(response);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
