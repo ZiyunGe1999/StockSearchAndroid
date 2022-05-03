@@ -138,6 +138,41 @@ public class DisplayStockInfo extends AppCompatActivity {
         }
     }
 
+    public class SetupCompanySocialSentiments implements SetUpView {
+        @Override
+        public void setup(JSONObject data) throws JSONException {
+            JSONArray redditSocial = data.getJSONArray("reddit");
+            JSONArray twitterSocial = data.getJSONArray("twitter");
+            Integer redditMention = 0;
+            Integer twitterMention = 0;
+            Integer twitterPositiveMention = 0;
+            Integer twitterNegativeMention = 0;
+            Integer redditPositiveMention = 0;
+            Integer redditNegativeMention = 0;
+            for (Integer i = 0; i < redditSocial.length(); i++) {
+                JSONObject redditBlock = redditSocial.getJSONObject(i);
+                redditMention += redditBlock.getInt("mention");
+                redditPositiveMention += redditBlock.getInt("positiveMention");
+                redditNegativeMention += redditBlock.getInt("negativeMention");
+            }
+
+            for (Integer i = 0; i < twitterSocial.length(); i++) {
+                JSONObject twitterBlock = twitterSocial.getJSONObject(i);
+                twitterMention += twitterBlock.getInt("mention");
+                twitterPositiveMention += twitterBlock.getInt("positiveMention");
+                twitterNegativeMention += twitterBlock.getInt("negativeMention");
+            }
+
+            setTextForView(redditMention.toString(), findViewById(R.id.socialTable00));
+            setTextForView(redditPositiveMention.toString(), findViewById(R.id.socialTable10));
+            setTextForView(redditNegativeMention.toString(), findViewById(R.id.socialTable20));
+
+            setTextForView(twitterMention.toString(), findViewById(R.id.socialTable01));
+            setTextForView(twitterPositiveMention.toString(), findViewById(R.id.socialTable11));
+            setTextForView(twitterNegativeMention.toString(), findViewById(R.id.socialTable21));
+        }
+    }
+
     @SuppressLint("ResourceAsColor")
     public void setupCompanyPeers(JSONArray jsonArray) throws JSONException {
         Log.e("gzy", jsonArray.toString());
@@ -174,6 +209,7 @@ public class DisplayStockInfo extends AppCompatActivity {
 
             setTextForView(data.getString("ticker"), findViewById(R.id.ticker));
             setTextForView(companyFullName, findViewById(R.id.company));
+            setTextForView(companyFullName, findViewById(R.id.socialSentimentsCompanyName));
 
             // setup about
             String ipo = data.getString("ipo");
@@ -323,6 +359,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         sendRequest(basicUrl + "stock/profile2?symbol=" + message, new SetUpCompanyDescription());
         sendRequest(basicUrl + "quote?symbol=" + message, new SetUpCompanyLatestPrice());
         sendRequest(basicUrl + "stock/peers?symbol=" + message, null);
+        sendRequest(basicUrl + "stock/social-sentiment?symbol=" + message + "&from=2022-01-01", new SetupCompanySocialSentiments());
 
         viewPager = findViewById(R.id.pager);
         viewPagerAdapter = new ViewPagerAdapter(ticker);
@@ -486,6 +523,7 @@ public class DisplayStockInfo extends AppCompatActivity {
     }
 
     public void sendRequest(String url, SetUpView setupView) {
+        Log.e("gzy", url);
         // Request a json response from the provided URL.
         if (url.contains("peers")) {
             JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {

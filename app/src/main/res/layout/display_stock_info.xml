@@ -250,7 +250,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5sp"
-                android:layout_marginLeft="10sp"
+                android:paddingLeft="10sp"
                 android:layout_marginEnd="20sp">
                 <TableRow>
                     <TextView
@@ -292,7 +292,7 @@
                         android:padding="3dip"
                         android:textColor="@color/black"/>
                     <HorizontalScrollView
-                        android:layout_width="250sp"
+                        android:layout_width="200sp"
                         android:layout_height="wrap_content"
                         android:id="@+id/myScrollView"
                         android:layout_marginStart="20sp">
@@ -304,6 +304,108 @@
 
                         </LinearLayout>
                     </HorizontalScrollView>
+                </TableRow>
+            </TableLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Insights"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:layout_marginLeft="5sp"
+                android:layout_marginTop="5sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Social Sentiments"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:padding="5sp"
+                android:textSize="20sp"/>
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+                <TableRow
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/socialSentimentsCompanyName"
+                        android:text="Company Name"
+                        android:background="#E9ECEF"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:text="Reddit"
+                        android:background="#E9ECEF"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:text="Twitter"
+                        android:background="#E9ECEF"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                </TableRow>
+                <TableRow
+                    android:gravity="center">
+                    <TextView
+                        android:text="Total Mentions"
+                        android:background="#E9ECEF"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/socialTable00"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/socialTable01"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                </TableRow>
+                <TableRow
+                    android:gravity="center">
+                    <TextView
+                        android:text="Positive Mentions"
+                        android:background="#E9ECEF"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/socialTable10"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/socialTable11"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                </TableRow>
+                <TableRow
+                    android:gravity="center">
+                    <TextView
+                        android:text="Negative Mentions"
+                        android:background="#E9ECEF"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/socialTable20"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
+                    <TextView
+                        android:id="@+id/socialTable21"
+                        android:padding="3dip"
+                        android:layout_margin="1dip"
+                        android:textColor="@color/black"/>
                 </TableRow>
             </TableLayout>
 
