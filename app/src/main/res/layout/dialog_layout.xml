@@ -62,12 +62,14 @@
         android:gravity="center">
         <Button
             android:id="@+id/buyBotton"
+            android:background="@drawable/ic_round_button"
             android:text="BUY"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20sp"/>
         <Button
             android:id="@+id/sellButton"
+            android:background="@drawable/ic_round_button"
             android:text="SELL"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

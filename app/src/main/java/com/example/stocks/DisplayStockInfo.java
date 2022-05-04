@@ -33,10 +33,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NavUtils;
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -102,6 +104,7 @@ public class DisplayStockInfo extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.e("gzy", "inside onCreateOptionsMenu");
         getMenuInflater().inflate(R.menu.stock_info_menu, menu);
         MenuItem starItem = menu.findItem(R.id.action_favorite);
         Boolean isFavorite = false;
@@ -381,6 +384,8 @@ public class DisplayStockInfo extends AppCompatActivity {
         messageTextView.setText(message);
 
         Button doneButton = congratulationDialog.findViewById(R.id.doneButton);
+//        doneButton.setBackgroundColor(Color.rgb(0, 164, 1));
+        doneButton.setTextColor(Color.rgb(0, 164, 1));
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -456,6 +461,15 @@ public class DisplayStockInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_stock_info);
 
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.stockMenuToolbar);
+        setSupportActionBar(myToolbar);
+
+        // Get a support ActionBar corresponding to this toolbar
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        ab.setDisplayHomeAsUpEnabled(true);
+
         df = new DecimalFormat("0.00");
 
         // Get the Intent that started this activity and extract the string
@@ -482,6 +496,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         viewPager.setAdapter(viewPagerAdapter);
 
         com.google.android.material.tabs.TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#5853EC"));
         new TabLayoutMediator(tabLayout,
                 viewPager,
                 (tab, position) -> tab.setIcon(position == 0 ? R.drawable.ic_chart : R.drawable.ic_time)
@@ -498,6 +513,8 @@ public class DisplayStockInfo extends AppCompatActivity {
 
         // trade button
         Button tradeButton = findViewById(R.id.trade);
+//        tradeButton.setBackgroundColor(Color.rgb(0, 164, 1));
+        tradeButton.setTextColor(Color.WHITE);
         tradeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -538,6 +555,8 @@ public class DisplayStockInfo extends AppCompatActivity {
                 });
 
                 Button buyButton = dialog.findViewById(R.id.buyBotton);
+//                buyButton.setBackgroundColor(Color.rgb(0, 164, 1));
+                buyButton.setTextColor(Color.WHITE);
                 buyButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -588,6 +607,8 @@ public class DisplayStockInfo extends AppCompatActivity {
                 });
 
                 Button sellButton = dialog.findViewById(R.id.sellButton);
+//                sellButton.setBackgroundColor(Color.rgb(0, 164, 1));
+                sellButton.setTextColor(Color.WHITE);
                 sellButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

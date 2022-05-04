@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -92,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         Log.e("gzy", "Create Main Activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.mainMenuToolbar);
+        setSupportActionBar(myToolbar);
 
         df = new DecimalFormat("0.00");
 //        lastChangeTimestamp = System.currentTimeMillis() / 1000L;
