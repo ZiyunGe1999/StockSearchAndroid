@@ -129,6 +129,11 @@ public class NewsAdaptor extends RecyclerView.Adapter<NewsAdaptor.NewsViewHolder
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull NewsAdaptor.NewsViewHolder holder, int position) {
         TextView headlineTextView;
         ImageView imageView = holder.newsImageView;

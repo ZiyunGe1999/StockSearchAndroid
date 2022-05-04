@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.car.ui.toolbar.TabLayout;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -134,11 +135,13 @@ public class DisplayStockInfo extends AppCompatActivity {
                     favoriteEditor.remove(ticker);
                     item.setIcon(R.drawable.ic_star_empty);
                     favoriteEditor.apply();
+                    Toast.makeText(this, ticker + " is removed from favorites", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     favoriteEditor.putBoolean(ticker, true);
                     favoriteEditor.apply();
                     item.setIcon(R.drawable.ic_star_fill);
+                    Toast.makeText(this, ticker + " is added to favorites", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             default:
@@ -669,9 +672,13 @@ public class DisplayStockInfo extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    sendRequest(url, setupView);
                 }
             });
+            jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    15000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             queue.add(jsonArrayRequest);
         }
         else if (url.contains("recommendation")) {
@@ -683,9 +690,13 @@ public class DisplayStockInfo extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    sendRequest(url, setupView);
                 }
             });
+            jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    15000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             queue.add(jsonArrayRequest);
         }
         else if (url.contains("earnings")) {
@@ -697,9 +708,13 @@ public class DisplayStockInfo extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    sendRequest(url, setupView);
                 }
             });
+            jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    15000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             queue.add(jsonArrayRequest);
         }
         else if (url.contains("company-news")) {
@@ -715,9 +730,13 @@ public class DisplayStockInfo extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    sendRequest(url, setupView);
                 }
             });
+            jsonArrayRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    15000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             queue.add(jsonArrayRequest);
         }
         else {
@@ -736,9 +755,13 @@ public class DisplayStockInfo extends AppCompatActivity {
 
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
+                            sendRequest(url, setupView);
                         }
                     });
+            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    15000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             // Add the request to the RequestQueue.
             queue.add(jsonObjectRequest);
         }

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -178,6 +179,79 @@ public class MainActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
+            private void sendAutoCompleteRequest(String s) {
+                final String searchS = s;
+                new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                        new Runnable() {
+                            public void run() {
+                                Log.e("gzy", "1 second times up");
+                                if (!searchS.equals(currentStringOnSearch)) {
+                                    return;
+                                }
+                                String url = basicUrl + "search?q=" + searchS;
+                                Log.e("gzy", "auto complete request send: " + url);
+                                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                                        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                Log.e("gzy", "auto complete request returns: " + url);
+                                                try {
+                                                    JSONArray result = response.getJSONArray("result");
+                                                    ArrayList<String> autocompleteResult = new ArrayList<>();
+                                                    for (int i = 0; i < result.length(); i++) {
+                                                        JSONObject item = result.getJSONObject(i);
+                                                        String symbol = item.getString("symbol");
+                                                        String fullname = item.getString("description");
+                                                        if (!symbol.matches(".*\\d.*") && !symbol.contains(".")) {
+                                                            String cur = symbol + " | " + fullname;
+                                                            autocompleteResult.add(cur);
+                                                        }
+                                                    }
+                                                    SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete)searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+                                                    searchAutoComplete.setDropDownBackgroundResource(R.color.white);
+                                                    searchAutoComplete.setThreshold(1);
+                                                    String dataArr[] = autocompleteResult.toArray(new String[autocompleteResult.size()]);
+//                                        String dataArr[] = {"Apple" , "Amazon" , "Amd", "Microsoft", "Microwave", "MicroNews", "Intel", "Intelligence"};
+                                                    ArrayAdapter<String> newsAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_dropdown_item_1line, dataArr);
+                                                    searchAutoComplete.setAdapter(newsAdapter);
+                                                    searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                        @Override
+                                                        public void onItemClick(AdapterView<?> adapterView, View view, int itemIndex, long id) {
+                                                            String queryString = adapterView.getItemAtPosition(itemIndex).toString();
+//                                                                searchAutoComplete.setText("" + queryString);
+//                                                                Toast.makeText(MainActivity.this, "you clicked " + queryString, Toast.LENGTH_SHORT).show();
+                                                            String selectedTicker = queryString.substring(0, queryString.indexOf(" | "));
+                                                            Intent intent = new Intent(MainActivity.this, DisplayStockInfo.class);
+                                                            intent.putExtra(EXTRA_MESSAGE, selectedTicker);
+                                                            intent.putExtra(EXTRA_PARENT_KEY, "MainActivity");
+                                                            startActivity(intent);
+                                                            finish();
+                                                        }
+                                                    });
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }, new Response.ErrorListener() {
+
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Log.e("gzy", error.toString());
+//                                                sendAutoCompleteRequest(s);
+                                            }
+                                        });
+                                // Add the request to the RequestQueue.
+                                jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                                        30000,
+                                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                                queue.add(jsonObjectRequest);
+                            }
+                        },
+                        1000);
+            }
+
             @Override
             public boolean onQueryTextSubmit(String s) {
                 dispalyStockInfoActivity(s);
@@ -190,72 +264,8 @@ public class MainActivity extends AppCompatActivity {
                 currentStringOnSearch = s;
                 Log.e("gzy", "onQueryTextChange: " + s);
 //                Long currentTimestamp = System.currentTimeMillis() / 1000L;
-                if (s.length() > 1) {
-                    final String searchS = s;
-                    new android.os.Handler(Looper.getMainLooper()).postDelayed(
-                            new Runnable() {
-                                public void run() {
-                                    Log.e("gzy", "1 second times up");
-                                    if (!searchS.equals(currentStringOnSearch)) {
-                                        return;
-                                    }
-                                    String url = basicUrl + "search?q=" + searchS;
-                                    Log.e("gzy", "auto complete request send: " + url);
-                                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                                            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                                                @Override
-                                                public void onResponse(JSONObject response) {
-                                                    Log.e("gzy", "auto complete request returns: " + url);
-                                                    try {
-                                                        JSONArray result = response.getJSONArray("result");
-                                                        ArrayList<String> autocompleteResult = new ArrayList<>();
-                                                        for (int i = 0; i < result.length(); i++) {
-                                                            JSONObject item = result.getJSONObject(i);
-                                                            String symbol = item.getString("symbol");
-                                                            String fullname = item.getString("description");
-                                                            if (!symbol.matches(".*\\d.*") && !symbol.contains(".")) {
-                                                                String cur = symbol + " | " + fullname;
-                                                                autocompleteResult.add(cur);
-                                                            }
-                                                        }
-                                                        SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete)searchView.findViewById(androidx.appcompat.R.id.search_src_text);
-                                                        searchAutoComplete.setDropDownBackgroundResource(R.color.white);
-                                                        searchAutoComplete.setThreshold(1);
-                                                        String dataArr[] = autocompleteResult.toArray(new String[autocompleteResult.size()]);
-//                                        String dataArr[] = {"Apple" , "Amazon" , "Amd", "Microsoft", "Microwave", "MicroNews", "Intel", "Intelligence"};
-                                                        ArrayAdapter<String> newsAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_dropdown_item_1line, dataArr);
-                                                        searchAutoComplete.setAdapter(newsAdapter);
-                                                        searchAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                                            @Override
-                                                            public void onItemClick(AdapterView<?> adapterView, View view, int itemIndex, long id) {
-                                                                String queryString = adapterView.getItemAtPosition(itemIndex).toString();
-//                                                                searchAutoComplete.setText("" + queryString);
-//                                                                Toast.makeText(MainActivity.this, "you clicked " + queryString, Toast.LENGTH_SHORT).show();
-                                                                String selectedTicker = queryString.substring(0, queryString.indexOf(" | "));
-                                                                Intent intent = new Intent(MainActivity.this, DisplayStockInfo.class);
-                                                                intent.putExtra(EXTRA_MESSAGE, selectedTicker);
-                                                                intent.putExtra(EXTRA_PARENT_KEY, "MainActivity");
-                                                                startActivity(intent);
-                                                                finish();
-                                                            }
-                                                        });
-                                                    } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                }
-                                            }, new Response.ErrorListener() {
-
-                                                @Override
-                                                public void onErrorResponse(VolleyError error) {
-
-                                                }
-                                            });
-                                    // Add the request to the RequestQueue.
-                                    queue.add(jsonObjectRequest);
-                                }
-                            },
-                            1000);
+                if (s.length() > 0) {
+                    sendAutoCompleteRequest(s);
                 }
                 return true;
             }
