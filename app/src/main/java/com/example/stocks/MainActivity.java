@@ -35,6 +35,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_MESSAGE = "com.example.stocks.STOCK";
+    public static final String EXTRA_PARENT_KEY = "com.example.stocks.STOCK_PARENT_KEY";
     RecyclerView recyclerView;
     RecyclerView favoritesRecyclerView;
     SharesRecyclerViewAdapter mAdapter;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("gzy", "Create Main Activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
     public void dispalyStockInfoActivity(String s) {
         Intent intent = new Intent(this, DisplayStockInfo.class);
         intent.putExtra(EXTRA_MESSAGE, s);
+        intent.putExtra(EXTRA_PARENT_KEY, "MainActivity");
         startActivity(intent);
     }
 

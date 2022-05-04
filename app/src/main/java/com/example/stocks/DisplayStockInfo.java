@@ -65,6 +65,7 @@ import java.util.Set;
 
 public class DisplayStockInfo extends AppCompatActivity {
     final String basicUrl = "https://stocksearchnodejs.wl.r.appspot.com/api/v1/";
+    String parentKey = "null";
     String ticker = "null";
     String companyFullName = null;
     RequestQueue queue;
@@ -93,7 +94,14 @@ public class DisplayStockInfo extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                if (parentKey.equals("MainActivity")){
+                    Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtra(MainActivity.EXTRA_MESSAGE, "no message");
+                    intent.putExtra(MainActivity.EXTRA_PARENT_KEY, ticker);
+                    startActivity(intent);
+                }else {
+                    finish();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -195,6 +203,7 @@ public class DisplayStockInfo extends AppCompatActivity {
                 public void onClick(View view) {
                     Intent intent = new Intent(context, DisplayStockInfo.class);
                     intent.putExtra(MainActivity.EXTRA_MESSAGE, peer);
+                    intent.putExtra(MainActivity.EXTRA_PARENT_KEY, ticker);
                     startActivity(intent);
                 }
             });
@@ -405,6 +414,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        parentKey = intent.getStringExtra(MainActivity.EXTRA_PARENT_KEY);
         message = message.toUpperCase();
         ticker = message;
 

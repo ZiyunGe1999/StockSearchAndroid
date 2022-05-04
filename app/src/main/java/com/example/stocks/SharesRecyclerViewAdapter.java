@@ -19,7 +19,9 @@ public class SharesRecyclerViewAdapter extends RecyclerView.Adapter<SharesRecycl
     public class SharesViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mTitle;
-        RelativeLayout relativeLayout;
+        public TextView sharesNumTexView;
+        public TextView sharesCostTextView;
+        public TextView sharesChangeTextView;
         View rowView;
 
         public SharesViewHolder(View itemView) {
@@ -27,6 +29,9 @@ public class SharesRecyclerViewAdapter extends RecyclerView.Adapter<SharesRecycl
 
             rowView = itemView;
             mTitle = itemView.findViewById(R.id.txtTitle);
+            sharesNumTexView = itemView.findViewById(R.id.sharesNumText);
+            sharesCostTextView = itemView.findViewById(R.id.shareCostTotal);
+            sharesChangeTextView = itemView.findViewById(R.id.shareChange);
         }
     }
 
