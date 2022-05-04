@@ -16,6 +16,7 @@ import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -33,7 +36,9 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.app.NavUtils;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -90,6 +95,24 @@ public class DisplayStockInfo extends AppCompatActivity {
     SharedPreferences shareCostPref;
     SharedPreferences.Editor shareCostEditor;
 
+    final String favoritePreferenceName = "Favorite";
+    SharedPreferences favoritePref;
+    SharedPreferences.Editor favoriteEditor;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.stock_info_menu, menu);
+        MenuItem starItem = menu.findItem(R.id.action_favorite);
+        Boolean isFavorite = false;
+        isFavorite = favoritePref.getBoolean(ticker, isFavorite);
+        if (isFavorite) {
+            starItem.setIcon(R.drawable.ic_star_fill);
+        }
+        else {
+            starItem.setIcon(R.drawable.ic_star_empty);
+        }
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -102,6 +125,21 @@ public class DisplayStockInfo extends AppCompatActivity {
                     startActivity(intent);
                 }
                 finish();
+                return true;
+            case R.id.action_favorite:
+                Log.e("gzy", "favorite clicked");
+                Boolean isFavorite = false;
+                isFavorite = favoritePref.getBoolean(ticker, isFavorite);
+                if (isFavorite) {
+                    favoriteEditor.remove(ticker);
+                    item.setIcon(R.drawable.ic_star_empty);
+                    favoriteEditor.apply();
+                }
+                else {
+                    favoriteEditor.putBoolean(ticker, true);
+                    favoriteEditor.apply();
+                    item.setIcon(R.drawable.ic_star_fill);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -452,6 +490,8 @@ public class DisplayStockInfo extends AppCompatActivity {
         portfolioEditor = portfolioPref.edit();
         shareCostPref = getApplicationContext().getSharedPreferences(shareCostPreferenceName, Context.MODE_PRIVATE);
         shareCostEditor = shareCostPref.edit();
+        favoritePref = getApplicationContext().getSharedPreferences(favoritePreferenceName, Context.MODE_PRIVATE);
+        favoriteEditor = favoritePref.edit();
 
         // trade button
         Button tradeButton = findViewById(R.id.trade);
