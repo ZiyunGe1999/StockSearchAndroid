@@ -77,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences shareCostPref;
     SharedPreferences.Editor shareCostEditor;
 
+    final String favoritePreferenceName = "Favorite";
+    SharedPreferences favoritePref;
+    SharedPreferences.Editor favoriteEditor;
+
 //    Long lastChangeTimestamp;
     final String basicUrl = "https://stocksearchnodejs.wl.r.appspot.com/api/v1/";
     RequestQueue queue;
@@ -127,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
         portfolioEditor = portfolioPref.edit();
         shareCostPref = getApplicationContext().getSharedPreferences(shareCostPreferenceName, Context.MODE_PRIVATE);
         shareCostEditor = shareCostPref.edit();
+        favoritePref = getApplicationContext().getSharedPreferences(favoritePreferenceName, Context.MODE_PRIVATE);
+        favoriteEditor = favoritePref.edit();
 
         Map<String, ?> allEntries = portfolioPref.getAll();
         ArrayList<Share> sharesTmp = new ArrayList<>();
@@ -264,15 +270,25 @@ public class MainActivity extends AppCompatActivity {
 //        stringArrayList.add("Item 4");
 
 
-        favoritesList.add("Favorite 1");
-        favoritesList.add("Favorite 2");
-        favoritesList.add("Favorite 3");
-        favoritesList.add("Favorite 4");
+//        favoritesList.add("Favorite 1");
+//        favoritesList.add("Favorite 2");
+//        favoritesList.add("Favorite 3");
+//        favoritesList.add("Favorite 4");
+
+        Map<String, ?> allEntries = favoritePref.getAll();
+        ArrayList<String> tmpFavoriteList = new ArrayList<>();
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+//            Log.d("map values", entry.getKey() + ": " + entry.getValue().toString());
+            String shareTicker = entry.getKey();
+            tmpFavoriteList.add(shareTicker);
+        }
+        favoritesList = tmpFavoriteList;
+
 
         mAdapter = new SharesRecyclerViewAdapter(shares, this, findViewById(R.id.netWorth));
         recyclerView.setAdapter(mAdapter);
 
-        favoritesAdapter = new RecyclerViewAdapter(favoritesList);
+        favoritesAdapter = new RecyclerViewAdapter(favoritesList, this);
         favoritesRecyclerView.setAdapter(favoritesAdapter);
     }
 
