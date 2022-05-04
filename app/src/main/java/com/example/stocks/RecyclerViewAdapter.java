@@ -50,7 +50,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return data == null ? 0 : data.size();
     }
 
     @Override
@@ -67,15 +67,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    @Override
-    public void onRowSelected(MyViewHolder myViewHolder) {
-        myViewHolder.rowView.setBackgroundColor(Color.GRAY);
-    }
+//    @Override
+//    public void onRowSelected(MyViewHolder myViewHolder) {
+//        myViewHolder.rowView.setBackgroundColor(Color.GRAY);
+//    }
 
     @Override
-    public void onRowClear(MyViewHolder myViewHolder) {
-        myViewHolder.rowView.setBackgroundColor(Color.WHITE);
-
+    public void onRowClear(RecyclerView.ViewHolder myViewHolder) {
+        if (myViewHolder instanceof RecyclerViewAdapter.MyViewHolder) {
+            RecyclerViewAdapter.MyViewHolder myViewHoldertmp = (RecyclerViewAdapter.MyViewHolder) myViewHolder;
+            myViewHoldertmp.rowView.setBackgroundColor(Color.WHITE);
+        }
     }
 
     public void removeItem(int position) {

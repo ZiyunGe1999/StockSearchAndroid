@@ -62,7 +62,9 @@ abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
 //        return makeMovementFlags(0, ItemTouchHelper.LEFT);
         int swipeFlags = 0;
         int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-        swipeFlags = ItemTouchHelper.START;
+        if (viewHolder instanceof RecyclerViewAdapter.MyViewHolder) {
+            swipeFlags = ItemTouchHelper.START;
+        }
         return makeMovementFlags(dragFlags, swipeFlags);
     }
 
@@ -98,6 +100,10 @@ abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
         if (viewHolder instanceof RecyclerViewAdapter.MyViewHolder) {
             RecyclerViewAdapter.MyViewHolder myViewHolder=
                     (RecyclerViewAdapter.MyViewHolder) viewHolder;
+            callbackmAdapter.onRowClear(myViewHolder);
+        }
+        else if (viewHolder instanceof SharesRecyclerViewAdapter.SharesViewHolder) {
+            SharesRecyclerViewAdapter.SharesViewHolder myViewHolder = (SharesRecyclerViewAdapter.SharesViewHolder) viewHolder;
             callbackmAdapter.onRowClear(myViewHolder);
         }
     }
@@ -151,8 +157,8 @@ abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
     public interface ItemTouchHelperContract {
 
         void onRowMoved(int fromPosition, int toPosition);
-        void onRowSelected(RecyclerViewAdapter.MyViewHolder myViewHolder);
-        void onRowClear(RecyclerViewAdapter.MyViewHolder myViewHolder);
+//        void onRowSelected(RecyclerViewAdapter.MyViewHolder myViewHolder);
+        void onRowClear(RecyclerView.ViewHolder myViewHolder);
 
     }
 }
