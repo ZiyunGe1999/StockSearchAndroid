@@ -381,7 +381,7 @@ public class DisplayStockInfo extends AppCompatActivity {
             }
         }
         RecyclerView newsRecyclerView = findViewById(R.id.newsView);
-        NewsAdaptor newsAdaptor = new NewsAdaptor(newsData, this);
+        NewsAdaptor newsAdaptor = new NewsAdaptor(newsData, this, newsRecyclerView);
         newsRecyclerView.setAdapter(newsAdaptor);
     }
 
