@@ -1,7 +1,9 @@
 package com.example.stocks;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Looper;
 import android.util.Log;
@@ -46,6 +48,7 @@ public class SharesRecyclerViewAdapter extends RecyclerView.Adapter<SharesRecycl
         public TextView sharesCostTextView;
         public TextView sharesChangeTextView;
         public ImageView sharesTrendImageView;
+        public ImageView sharesRightArrowImageView;
         View rowView;
 
         public SharesViewHolder(View itemView) {
@@ -57,6 +60,7 @@ public class SharesRecyclerViewAdapter extends RecyclerView.Adapter<SharesRecycl
             sharesCostTextView = itemView.findViewById(R.id.shareCostTotal);
             sharesChangeTextView = itemView.findViewById(R.id.shareChange);
             sharesTrendImageView = itemView.findViewById(R.id.sharesTrend);
+            sharesRightArrowImageView = itemView.findViewById(R.id.rightArrow);
         }
     }
 
@@ -147,6 +151,16 @@ public class SharesRecyclerViewAdapter extends RecyclerView.Adapter<SharesRecycl
         else {
             holder.sharesNumTexView.setText(share.sharesNum.toString() + " share");
         }
+        holder.sharesRightArrowImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, DisplayStockInfo.class);
+                intent.putExtra(MainActivity.EXTRA_MESSAGE, share.ticker);
+                intent.putExtra(MainActivity.EXTRA_PARENT_KEY, "MainActivity");
+                context.startActivity(intent);
+                ((Activity)context).finish();
+            }
+        });
         updateInfoForHolder(holder, share, Double.valueOf(share.totalCost));
     }
 
