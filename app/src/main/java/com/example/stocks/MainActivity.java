@@ -36,6 +36,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import androidx.appcompat.widget.SearchView;
+
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,11 +91,37 @@ public class MainActivity extends AppCompatActivity {
     RequestQueue queue;
     String currentStringOnSearch = "";
 
+    LinearLayout mainLinearLayout;
+    ProgressBar mainProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.e("gzy", "Create Main Activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mainLinearLayout = findViewById(R.id.main_LinearLayput);
+        mainLinearLayout.setVisibility(View.GONE);
+        mainProgressBar = findViewById(R.id.main_progress_loader);
+        mainProgressBar.setVisibility(View.VISIBLE);
+
+        Intent intent = getIntent();
+        String parentKey = intent.getStringExtra(MainActivity.EXTRA_PARENT_KEY);
+
+        if (parentKey == null) {
+            new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                    new Runnable() {
+                        public void run() {
+                            mainProgressBar.setVisibility(View.GONE);
+                            mainLinearLayout.setVisibility(View.VISIBLE);
+                        }
+                    },
+                    1000);
+        }
+        else {
+            mainProgressBar.setVisibility(View.GONE);
+            mainLinearLayout.setVisibility(View.VISIBLE);
+        }
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.mainMenuToolbar);
         setSupportActionBar(myToolbar);

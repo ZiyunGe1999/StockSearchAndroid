@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,6 +102,9 @@ public class DisplayStockInfo extends AppCompatActivity {
     final String favoritePreferenceName = "Favorite";
     SharedPreferences favoritePref;
     SharedPreferences.Editor favoriteEditor;
+
+    LinearLayout stockLinearLayout;
+    ProgressBar progressBar;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -281,6 +285,9 @@ public class DisplayStockInfo extends AppCompatActivity {
             webpage = data.getString("weburl");
             TextView webpageTextView = findViewById(R.id.webpage);
             setTextForView(webpage, webpageTextView);
+
+            progressBar.setVisibility(View.GONE);
+            stockLinearLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -460,6 +467,11 @@ public class DisplayStockInfo extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.display_stock_info);
+
+        stockLinearLayout = findViewById(R.id.stock_LinearLayout);
+        stockLinearLayout.setVisibility(View.GONE);
+        progressBar = findViewById(R.id.stock_progress_loader);
+        progressBar.setVisibility(View.VISIBLE);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.stockMenuToolbar);
         setSupportActionBar(myToolbar);
