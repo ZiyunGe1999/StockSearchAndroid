@@ -10,4 +10,5 @@
     <color name="blue">#FF0000FF</color>
     <color name="green">#FF00FF00</color>
     <color name="red">#FFFF0000</color>
+    <color name="trade_green">#FF03A302</color>
 </resources>

@@ -347,34 +347,40 @@ public class DisplayStockInfo extends AppCompatActivity {
             }
         });
 
+        congratulationDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         congratulationDialog.show();
     }
 
     void showAlertDialog(String message, Context parentContext) {
-        final Dialog alertDialog = new Dialog(parentContext);
-        alertDialog.setContentView(R.layout.alert_layout);
-        alertDialog.setTitle("alert");
+            CharSequence text = message;
+            int duration = Toast.LENGTH_SHORT;
 
-        TextView alertMessageTextView = alertDialog.findViewById(R.id.alertMessage);
-        alertMessageTextView.setText(message);
-
-        Window window = alertDialog.getWindow();
-        WindowManager.LayoutParams wlp = window.getAttributes();
-
-        wlp.gravity = Gravity.BOTTOM;
-        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-        window.setAttributes(wlp);
-
-        alertDialog.show();
-
-        new android.os.Handler(Looper.getMainLooper()).postDelayed(
-        new Runnable() {
-            public void run() {
-                Log.e("gzy", "times up!");
-                alertDialog.dismiss();
-            }
-        },
-        3500);
+            Toast toast = Toast.makeText(parentContext, text, duration);
+            toast.show();
+//        final Dialog alertDialog = new Dialog(parentContext);
+//        alertDialog.setContentView(R.layout.alert_layout);
+//        alertDialog.setTitle("alert");
+//
+//        TextView alertMessageTextView = alertDialog.findViewById(R.id.alertMessage);
+//        alertMessageTextView.setText(message);
+//
+//        Window window = alertDialog.getWindow();
+//        WindowManager.LayoutParams wlp = window.getAttributes();
+//
+//        wlp.gravity = Gravity.BOTTOM;
+//        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+//        window.setAttributes(wlp);
+//
+//        alertDialog.show();
+//
+//        new android.os.Handler(Looper.getMainLooper()).postDelayed(
+//        new Runnable() {
+//            public void run() {
+//                Log.e("gzy", "times up!");
+//                alertDialog.dismiss();
+//            }
+//        },
+//        3500);
     }
 
     void setupTopNews(JSONArray data) throws JSONException {
