@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -77,6 +78,15 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat month_date = new SimpleDateFormat("MMM");
         String month_name = month_date.format(cal.getTime());
         todayDateTextView.setText(cal.get(Calendar.DAY_OF_MONTH) + " " + month_name + " " + cal.get(Calendar.YEAR));
+
+        TextView finnhubTextView = findViewById(R.id.finnhub);
+        finnhubTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent openurl = new Intent(Intent.ACTION_VIEW, Uri.parse("https://finnhub.io/"));
+                startActivity(openurl);
+            }
+        });
 
 
         amountPref = getApplicationContext().getSharedPreferences("Amount", 0);
