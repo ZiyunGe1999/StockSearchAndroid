@@ -195,7 +195,7 @@ public class DisplayStockInfo extends AppCompatActivity {
             String peer = jsonArray.getString(i);
             TextView tv = new TextView(getApplicationContext());
             setTextForView(peer + "  ", tv);
-            tv.setTextColor(R.color.blue);
+            tv.setTextColor(Color.BLUE);
 //            tv.setTextSize(20);
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
