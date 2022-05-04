@@ -99,9 +99,8 @@ public class DisplayStockInfo extends AppCompatActivity {
                     intent.putExtra(MainActivity.EXTRA_MESSAGE, "no message");
                     intent.putExtra(MainActivity.EXTRA_PARENT_KEY, ticker);
                     startActivity(intent);
-                }else {
-                    finish();
                 }
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -563,12 +562,22 @@ public class DisplayStockInfo extends AppCompatActivity {
                             amountEditor.putFloat(amountKey, remainedMoney);
                             amountEditor.apply();
 
-                            portfolioEditor.putInt(ticker, holdShares - sellShares);
+                            if (holdShares > sellShares) {
+                                portfolioEditor.putInt(ticker, holdShares - sellShares);
+                            }
+                            else {
+                                portfolioEditor.remove(ticker);
+                            }
                             portfolioEditor.apply();
 
                             Float holdCost = 0.0F;
                             holdCost = shareCostPref.getFloat(ticker, holdCost);
-                            shareCostEditor.putFloat(ticker, holdCost - sellTotal);
+                            if (holdShares > sellShares) {
+                                shareCostEditor.putFloat(ticker, holdCost - sellTotal);
+                            }
+                            else {
+                                shareCostEditor.remove(ticker);
+                            }
                             shareCostEditor.apply();
 
                             new android.os.Handler(Looper.getMainLooper()).postDelayed(

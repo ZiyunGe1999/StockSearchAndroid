@@ -97,16 +97,27 @@ public class MainActivity extends AppCompatActivity {
 
         Map<String, ?> allEntries = portfolioPref.getAll();
         ArrayList<Share> sharesTmp = new ArrayList<>();
+        Float netWorth = cash;
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
 //            Log.d("map values", entry.getKey() + ": " + entry.getValue().toString());
             String shareTicker = entry.getKey();
             Integer shareNum = Integer.valueOf(entry.getValue().toString());
-            Float shareTotalCost = 0.0F;
-            shareTotalCost = shareCostPref.getFloat(shareTicker, shareTotalCost);
-            Share share = new Share(shareTicker, shareNum, shareTotalCost);
-            sharesTmp.add(share);
+            if (shareNum > 0) {
+                Float shareTotalCost = 0.0F;
+                shareTotalCost = shareCostPref.getFloat(shareTicker, shareTotalCost);
+                Share share = new Share(shareTicker, shareNum, shareTotalCost);
+                sharesTmp.add(share);
+                netWorth += shareTotalCost;
+            }else {
+                portfolioEditor.remove(shareTicker);
+                shareCostEditor.remove(shareTicker);
+            }
         }
+        portfolioEditor.apply();
+        shareCostEditor.apply();
         shares = sharesTmp;
+        TextView netWorthTextView = findViewById(R.id.netWorth);
+        netWorthTextView.setText("$" + df.format(netWorth));
 
         populateRecyclerView();
         enableSwipeToDeleteAndUndo();
@@ -117,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_MESSAGE, s);
         intent.putExtra(EXTRA_PARENT_KEY, "MainActivity");
         startActivity(intent);
+        finish();
     }
 
     @Override
@@ -153,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         favoritesList.add("Favorite 3");
         favoritesList.add("Favorite 4");
 
-        mAdapter = new SharesRecyclerViewAdapter(shares);
+        mAdapter = new SharesRecyclerViewAdapter(shares, this, findViewById(R.id.netWorth));
         recyclerView.setAdapter(mAdapter);
 
         favoritesAdapter = new RecyclerViewAdapter(favoritesList);
