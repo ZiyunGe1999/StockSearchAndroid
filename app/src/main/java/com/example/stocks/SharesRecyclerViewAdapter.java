@@ -104,6 +104,7 @@ public class SharesRecyclerViewAdapter extends RecyclerView.Adapter<SharesRecycl
                             netWorthTextView.setText("$" + df.format(currentNetWorth));
                         }
                         else if (change < 0) {
+                            holder.sharesTrendImageView.setImageResource(R.drawable.ic_trend_down);
                             holder.sharesChangeTextView.setTextColor(Color.RED);
                             Double prevNetWorth = Double.parseDouble(netWorthTextView.getText().toString().substring(1));
                             Log.e("gzy", "change < 0 | prevNetWorth: " + prevNetWorth.toString());
