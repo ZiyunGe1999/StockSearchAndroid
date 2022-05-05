@@ -511,7 +511,7 @@ public class DisplayStockInfo extends AppCompatActivity {
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#5853EC"));
         new TabLayoutMediator(tabLayout,
                 viewPager,
-                (tab, position) -> tab.setIcon(position == 0 ? R.drawable.ic_chart : R.drawable.ic_time)
+                (tab, position) -> tab.setIcon(position == 0 ? R.drawable.chart_line : R.drawable.ic_time)
         ).attach();
 
         amountPref = getApplicationContext().getSharedPreferences(amountPreferenceName, Context.MODE_PRIVATE);
