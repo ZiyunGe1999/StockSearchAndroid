@@ -242,6 +242,9 @@ public class DisplayStockInfo extends AppCompatActivity {
         LinearLayout companyPeersLinearLayout = findViewById(R.id.companyPeers);
         for (Integer i = 0; i < jsonArray.length(); i++) {
             String peer = jsonArray.getString(i);
+            if (peer.contains(".") || peer.matches(".*\\d.*")) {
+                continue;
+            }
             TextView tv = new TextView(getApplicationContext());
             setTextForView(peer + "  ", tv);
             tv.setTextColor(Color.BLUE);
