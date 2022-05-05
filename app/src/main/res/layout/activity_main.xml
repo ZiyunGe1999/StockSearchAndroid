@@ -147,4 +147,12 @@
         android:indeterminateTintMode="src_atop"
         android:indeterminateTint="#631DC0"/>
 
+    <ImageView
+        android:id="@+id/splashScreen"
+        android:background="@color/white"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="170dp"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

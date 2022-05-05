@@ -37,6 +37,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import androidx.appcompat.widget.SearchView;
 
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     LinearLayout mainLinearLayout;
     ProgressBar mainProgressBar;
+    ImageView splashScreenImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
         mainLinearLayout = findViewById(R.id.main_LinearLayput);
         mainLinearLayout.setVisibility(View.GONE);
         mainProgressBar = findViewById(R.id.main_progress_loader);
-        mainProgressBar.setVisibility(View.VISIBLE);
+        mainProgressBar.setVisibility(View.GONE);
+        splashScreenImageView = findViewById(R.id.splashScreen);
+        splashScreenImageView.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
         String parentKey = intent.getStringExtra(MainActivity.EXTRA_PARENT_KEY);
@@ -112,13 +116,22 @@ public class MainActivity extends AppCompatActivity {
             new android.os.Handler(Looper.getMainLooper()).postDelayed(
                     new Runnable() {
                         public void run() {
-                            mainProgressBar.setVisibility(View.GONE);
-                            mainLinearLayout.setVisibility(View.VISIBLE);
+                            splashScreenImageView.setVisibility(View.GONE);
+                            mainProgressBar.setVisibility(View.VISIBLE);
+                            new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                                    new Runnable() {
+                                        public void run() {
+                                            mainProgressBar.setVisibility(View.GONE);
+                                            mainLinearLayout.setVisibility(View.VISIBLE);
+                                        }
+                                    },
+                                    1500);
                         }
                     },
-                    1000);
+                    1500);
         }
         else {
+            splashScreenImageView.setVisibility(View.GONE);
             mainProgressBar.setVisibility(View.GONE);
             mainLinearLayout.setVisibility(View.VISIBLE);
         }
